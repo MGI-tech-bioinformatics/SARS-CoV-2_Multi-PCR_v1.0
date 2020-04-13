@@ -4,7 +4,7 @@ SARS-CoV-2 analysis pipeline for multiplex-PCR MPS(Massive Parrallel Sequencing)
 ## Introduction
 This pipeline could accurately and efficiently identify SARS-CoV-2 reads from multiplex PCR sequencing data, and report the infection status of sequencing samples with positive/negative/uncertain label. At the same time, pipeline could get the vatiant information of each sample such as SNP/INDEL, which then helps generate the consensus sequence of SARS-CoV-2 genome. All of results are merged into an html report.
 
-![Image](https://github.com/BGI-IORI/nCoV/blob/master/Image.png)
+![Image](https://github.com/MGI-tech-bioinformatics/SARS-CoV-2_Multi-PCR_v1.0/blob/master/Pipeline.png)
 
 ## Requirements:
 Before running this pipeline, you need to make sure that several pieces of software and/or modules are installed on the system:  

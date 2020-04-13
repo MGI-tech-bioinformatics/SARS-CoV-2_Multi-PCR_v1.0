@@ -9,12 +9,12 @@ This pipeline could accurately and efficiently identify SARS-CoV-2 reads from mu
 ## Requirements:
 Before running this pipeline, you need to make sure that several pieces of software and/or modules are installed on the system:  
 
-perl: v5.26.0  
-python: v3.4.3  
+Perl: v5.26.0  
+Python: v3.4.3  
 R: v3.3.2
 
-Library for python3 and R:  
-* python3: pysam  
+Library for Python3 and R:  
+* Python3: pysam  
 * R: Cairo
 
 Softwares for data quality control:  
@@ -40,7 +40,7 @@ Other required softwares:
 
 To clone the repository:
 
-    git clone https://github.com/meizhiying/UAP.git
+    git clone https://github.com/MGI-tech-bioinformatics/SARS-CoV-2_Multi-PCR_v1.0.git
 
 
 Notes: The above dependent software needs to be installed separately according to their instructions. After installing, the users should edit the input.json file, and change the software path to your own path.

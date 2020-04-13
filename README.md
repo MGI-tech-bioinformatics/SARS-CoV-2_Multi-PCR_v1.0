@@ -1,4 +1,4 @@
-# SARS-CoV-2_pipeline
+# SARS-CoV-2_Multi-PCR_v1.0
 SARS-CoV-2 analysis pipeline for multiplex-PCR MPS(Massive Parrallel Sequencing) data.
 
 ## Introduction

@@ -1,0 +1,64 @@
+body {
+	background: #EEE;	
+	font-family: "Trebuchet MS",Verdana,Arial,sans-serif;
+	font-size: 14px;
+	line-height: 1.6;
+}
+/* download by http://sc.xueit.com */
+#content2 {
+	width: 1080px;
+	min-height: 500px;
+	max-height: 600px;
+	overflow-y: auto;
+	margin: 25px auto;
+	padding: 20px;
+	background: #FFF;	
+	border: 5px solid #CCC;
+}
+
+h1 {
+	margin: 0;
+}
+
+hr {
+	border: none;
+	height: 1px; line-height: 1px;
+	background: #CCC;	
+	margin-bottom: 20px;
+	padding: 0;
+}
+
+p {
+	margin: 0;	
+	padding: 7px 0;
+}
+
+.clear {
+	clear: both;
+	line-height: 1px;
+	font-size: 1px;
+}
+
+a { 
+	outline-color: #888;	
+}
+
+.initImg{
+    width: 150px;
+	height: 150px;
+}
+.fillImg{
+    object-fit: fill;
+}
+.containImg{
+    object-fit: contain;
+}
+.coverImg{
+    object-fit: cover;
+}
+.noneImg{
+    object-fit: none;
+}
+.scaleDownImg{
+    object-fit: scale-down;
+}

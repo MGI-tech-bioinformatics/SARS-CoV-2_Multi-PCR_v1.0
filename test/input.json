@@ -1,0 +1,22 @@
+{
+  "FqType": "PE100",
+  "sample_list": "path/to/sample.list",
+  "workdir": "path/to/workdir",
+  "SplitData": "1M",
+  "consensus_depth": 0,
+  "python3": "path/to/python3",
+  "python3_lib": "path/to/PYTHONPATH",
+  "Rscript": "path/to/Rscript",
+  "R_lib": "path/to/R_LIB",
+  "seqtk": "path/to/seqtk",
+  "bwa": "path/to/bwa",
+  "samtools": "path/to/samtools",
+  "freebayes": "path/to/freebayes",
+  "bcftools": "path/to/bcftools",
+  "bgzip": "path/to/bgzip",
+  "tabix": "path/to/tabix",
+  "bedtools": "path/to/bedtools",
+  "mosdepth": "path/to/mosdepth",
+  "bamdst": "path/to/bamdst",
+  "SOAPnuke": "path/to/SOAPnuke"
+}

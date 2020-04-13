@@ -1,0 +1,80 @@
+th {
+font: bold 11px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+color: #ffffff;
+letter-spacing: 2px;
+text-transform: capitalize;
+vertical-align: middle;
+text-align: center;
+padding: 6px 6px 6px 12px;
+background: #007aac  no-repeat;
+}
+
+td {
+vertical-align: middle;
+text-align: center;
+font-size: 0.5rem;
+padding: 6px 6px 6px 12px;
+color: #51534a;
+}
+
+.secThree tr:nth-child(even) {
+  background-color: #ffffff;
+}
+
+.secThree tr:nth-child(odd) {
+  background-color: #e6f4f9;
+}
+
+.secThree tr:hover {
+   background-color: beige;
+ }
+
+.secThree th {
+border-bottom: 1px solid #C1DAD7;
+border-top: 1px solid #007aac;
+height: 40px;
+}
+
+.secThree th:first-child {
+border-left: 1px solid #007aac ;
+}
+
+.secThree th:last-child{
+border-right: 1px solid #007aac;	
+}
+
+.secThree td, .secTwo td {
+height: 30px;
+border-top: 1px solid #007aac;
+border-bottom: 1px solid #007aac;
+}
+
+.secThree td:first-child {
+border-left: 1px solid #007aac;
+}
+.secThree  td:last-child {
+border-right: 1px solid #007aac;
+}
+
+
+.secTwo th {
+border-bottom: 1px solid #C1DAD7;
+border-top: 1px solid #007aac;
+}
+
+.secTwo th:last-child {
+border-right: 1px solid #007aac;
+} 
+
+table tbody {
+	display: block;
+/*	height:	600px; */
+	min-height: 10px;
+	max-height: 700px;
+	min-width: 710px;
+	max-width: 1080px;
+/*	width: 1080px; */
+	overflow-y: auto;
+	overflow-x: auto;
+}
+

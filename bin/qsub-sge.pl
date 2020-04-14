@@ -174,7 +174,7 @@ my @Shell;  ## store the file names of qsub sell
 open IN, $work_shell_file_globle || die "fail open $work_shell_file_globle";
 while(<IN>){
 	chomp;
-	s/&/;/g;
+	#s/&/;/g;
 	next unless($_);
 	if ($line_mark % $Lines == 0) {
 		open OUT,">$Work_dir/$Job_prefix\_$Job_mark.sh" || die "failed creat $Job_prefix\_$Job_mark.sh";

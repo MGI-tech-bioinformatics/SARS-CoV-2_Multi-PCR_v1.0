@@ -14,7 +14,7 @@ Python: v3.4.3
 R: v3.3.2
 
 Library for Python3 and R:  
-* Python3: pysam  
+* Python3: pysam,pandas  
 * R: Cairo
 
 Softwares for data quality control:  

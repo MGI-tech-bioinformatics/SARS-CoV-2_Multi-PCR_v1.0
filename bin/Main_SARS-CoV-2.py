@@ -104,11 +104,11 @@ def CovDep(script,barcode):
 
 def Statistics(script,fqtype):
 	if fqtype == 'PE':
-		script.write("%(python3)s %(bin)s/CoV_stat.py -t PE -d %(result_dir)s -l %(barcode_file)s\n"\
-			%{'bin':bin,'result_dir':result_dir,'barcode_file':barcode_file,'python3':python3})
+		script.write("export PYTHONPATH=%(python3_lib)s:$PYTHONPATH && %(python3)s %(bin)s/CoV_stat.py -t PE -d %(result_dir)s -l %(barcode_file)s\n"\
+			%{'bin':bin,'result_dir':result_dir,'barcode_file':barcode_file,'python3':python3,'python3_lib':python3_lib})
 	elif fqtype == 'SE':
-		script.write("%(python3)s %(bin)s/CoV_stat.py -t SE -d %(result_dir)s -l %(barcode_file)s\n"\
-			%{'bin':bin,'result_dir':result_dir,'barcode_file':barcode_file,'python3':python3})
+		script.write("export PYTHONPATH=%(python3_lib)s:$PYTHONPATH && %(python3)s %(bin)s/CoV_stat.py -t SE -d %(result_dir)s -l %(barcode_file)s\n"\
+			%{'bin':bin,'result_dir':result_dir,'barcode_file':barcode_file,'python3':python3,'python3_lib':python3_lib})
 	return
 
 def CutPrimer(script,fqtype_p,sample):

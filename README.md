@@ -53,7 +53,7 @@ The details for input.json file are as follows:
 * sample_list, sample list file(sample_name/barcode_information/data_path).  
 * workdir, analysis result directory.  
 * SplitData, downsampling size of each sample(1G/1M/1K).
-* consensus_depth, threshold of the point depth in consensus sequence,below which the point will be signed as 'N'.
+* consensus_depth, threshold of the point depth in consensus sequence,below which the point will be signed as 'N'.[1~10]
 * python3, path to python3.
 * python3_lib, path to python3 library.
 * Rscript, path to Rscript.

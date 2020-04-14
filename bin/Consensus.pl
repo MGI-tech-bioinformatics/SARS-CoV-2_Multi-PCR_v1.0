@@ -6,7 +6,7 @@ my %hash;
 while(<IN>){
 	chomp;
 	my @t = split /\t/,$_;
-	$hash{$t[1]} = 1 if($t[2] <= $ARGV[2]);
+	$hash{$t[1]} = 1 if($t[2] < $ARGV[2]);
 }
 close IN;
 

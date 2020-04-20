@@ -2,7 +2,7 @@
 SARS-CoV-2 analysis pipeline for multiplex-PCR MPS(Massive Parrallel Sequencing) data.
 
 ## Introduction
-This pipeline could accurately and efficiently identify SARS-CoV-2 reads from multiplex PCR sequencing data, and report the infection status of sequencing samples with positive/negative/uncertain label. At the same time, pipeline could get the vatiant information of each sample such as SNP/INDEL, which then helps generate the consensus sequence of SARS-CoV-2 genome. All of results are merged into an html report.
+This pipeline could accurately and efficiently identify SARS-CoV-2 reads from multiplex PCR sequencing data, and report the infection status of sequencing samples with positive/negative/uncertain label. The pipeline could also get the variant information such as SNP/INDEL and generate the consensus sequence.
 
 ![Image](https://github.com/MGI-tech-bioinformatics/SARS-CoV-2_Multi-PCR_v1.0/blob/master/Pipeline.png)
 
@@ -53,7 +53,6 @@ The details for input.json file are as follows:
 * sample_list, sample list file(sample_name/barcode_information/data_path).  
 * workdir, analysis result directory.  
 * SplitData, downsampling size of each sample(1G/1M/1K).
-* consensus_depth, threshold of the point depth in consensus sequence,below which the point will be signed as 'N'.[1~10]
 * python3, path to python3.
 * python3_lib, path to python3 library.
 * Rscript, path to Rscript.

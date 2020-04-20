@@ -3,7 +3,6 @@
   "sample_list": "path/to/sample.list",
   "workdir": "path/to/workdir",
   "SplitData": "1M",
-  "consensus_depth": 0,
   "python3": "path/to/python3",
   "python3_lib": "path/to/PYTHONPATH",
   "Rscript": "path/to/Rscript",

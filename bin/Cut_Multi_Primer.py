@@ -32,7 +32,7 @@ def cut_primer(chrn,pos,seq,qua,R1_set,R2_set):
 	result = 'NA'
 	for i in R1_set:
 		p_chrn, p_start, p_end = i.split()[0:3]
-		if chrn == p_chrn and int(pos) - 5 <= int(p_start) <= int(pos) + 5:
+		if chrn == p_chrn and int(pos) - 1 <= int(p_start) <= int(pos) + 1:
 			result = 'PASS'
 			cut_seq = seq[(int(p_end) - int(p_start) + 1):]
 			cut_qua = qua[(int(p_end) - int(p_start) + 1):]
@@ -40,7 +40,7 @@ def cut_primer(chrn,pos,seq,qua,R1_set,R2_set):
 	if result == 'NA':
 		for i in R2_set:
 			p_chrn, p_start, p_end = i.split()[0:3]
-			if chrn == p_chrn and int(pos) - 5 <= int(p_start) <= int(pos) + 5:
+			if chrn == p_chrn and int(pos) - 1 <= int(p_start) <= int(pos) + 1:
 				result = 'PASS'
 				cut_seq = seq[0:(int(p_end) - int(p_start) + 1)]
 				cut_qua = qua[0:(int(p_end) - int(p_start) + 1)]

@@ -138,10 +138,10 @@ def AlignVariant(script,fqtype,cutprimer_list,consensus_depth):
 			create_dirs(Stat_dir)
 			if fqtype == 'PE':
 				script.write("%(bwa)s mem -Y -M -R \"@RG\\tID:%(sample)s\\tSM:%(sample)s\" -t 3 %(ref)s %(fq1)s %(fq2)s | %(samtools)s view -b - | %(samtools)s sort -T %(Stat_dir)s/%(sample)s -o %(Stat_dir)s/%(sample)s.bam -\n"\
-					%{'bwa':bwa,'samtools':'samtools','sample':sample,'ref':ref,'fq1':fq1,'fq2':fq2,'Stat_dir':Stat_dir})
+					%{'bwa':bwa,'samtools':samtools,'sample':sample,'ref':ref,'fq1':fq1,'fq2':fq2,'Stat_dir':Stat_dir})
 			elif fqtype == 'SE':
 				script.write("%(bwa)s mem -Y -M -R \"@RG\\tID:%(sample)s\\tSM:%(sample)s\" -t 3 %(ref)s %(fq)s | %(samtools)s view -b - | %(samtools)s sort -T %(Stat_dir)s/%(sample)s -o %(Stat_dir)s/%(sample)s.bam -\n"\
-					%{'bwa':bwa,'samtools':'samtools','sample':sample,'ref':ref,'fq':fq,'Stat_dir':Stat_dir})
+					%{'bwa':bwa,'samtools':samtools,'sample':sample,'ref':ref,'fq':fq,'Stat_dir':Stat_dir})
 			script.write("%(samtools)s index %(Stat_dir)s/%(sample)s.bam\n"%{'samtools':samtools,'Stat_dir':Stat_dir,'sample':sample})
 			script.write("%(mosdepth)s -n --fast-mode --by 100 %(Stat_dir)s/depth %(Stat_dir)s/%(sample)s.bam\n"%{'mosdepth':mosdepth,'Stat_dir':Stat_dir,'sample':sample})
 			script.write("less %(Stat_dir)s/depth.regions.bed.gz|awk  '{print NR\"\\t\"log($4+0.1)}' > %(Stat_dir)s/%(sample)s.draw.depth\n"%{'Stat_dir':Stat_dir,'sample':sample})

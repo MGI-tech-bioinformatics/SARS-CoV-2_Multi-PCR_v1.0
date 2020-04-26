@@ -41,7 +41,7 @@ def CleanData(script,sample,barcode,fqtype,SplitData):
 			t_dict = {'G':10**9,'M':10**6,'K':10**3}
 			SplitData_n = float(SplitData.strip()[0:-1])*t_dict[SplitData.strip()[-1]]
 			splitfq = Clean_dir + '/Split_' + sample + '.fq'
-			script.write("%(seqtk) sample -s100 %(rawfq)s %(SplitData_n)s > %(splitfq)s && gzip %(splitfq)s && "\
+			script.write("%(seqtk)s sample -s100 %(rawfq)s %(SplitData_n)s > %(splitfq)s && gzip %(splitfq)s && "\
 				%{'seqtk':seqtk,'rawfq':rawfq,'splitfq':splitfq,'SplitData_n':SplitData_n})
 			script.write("%(SOAPnuke)s filter -l 10 -q 0.2 -n 0.05 -Q 2 -G -T 1 -f AAGTCGGAGGCCAAGCGGTCTTAGGAAGACAA -1 %(splitfq)s.gz -C %(cleanfq)s -o %(Clean_dir)s \n"\
 				%{'SOAPnuke':SOAPnuke,'splitfq':splitfq,'cleanfq':cleanfq,'Clean_dir':Clean_dir})

@@ -147,7 +147,7 @@ def AlignVariant(script,fqtype,cutprimer_list,consensus_depth):
 			script.write("%(samtools)s depth -a -b %(virusbed)s %(Align_dir)s/%(sample)s.sort.bam > %(Stat_dir)s/%(sample)s.depth\n"%{'samtools':samtools,'virusbed':virusbed,'Align_dir':Align_dir,'sample':sample,'Stat_dir':Stat_dir})
 			script.write("export LD_LIBRARY_PATH=/ldfssz1/MGI_BIT/RUO/meizhiying/project/Multi_PCR_2019-nCoV/SARS-CoV-2_pipeline/bin/AlignVariant/../../lib/lib64:$LD_LIBRARY_PATH && export R_LIBS=%(R_lib)s:$R_LIBS && %(Rscript)s %(bin)s/line.depth.R %(Stat_dir)s/%(sample)s.draw.depth %(Stat_dir)s/Windows.Depth.svg\n"%{'Rscript':Rscript,'bin':bin,'Stat_dir':Stat_dir,'R_lib':R_lib,'sample':sample})
 			script.write("%(bin)s/Consensus.pl %(Stat_dir)s/%(sample)s.depth %(ref)s %(consensus_depth)s %(Stat_dir)s/%(sample)s.reference1.fa\n"%{'bin':bin,'Stat_dir':Stat_dir,'sample':sample,'ref':ref,'consensus_depth':consensus_depth})
-			script.write("export LD_LIBRARY_PATH=/ldfssz1/MGI_BIT/RUO/meizhiying/project/Multi_PCR_2019-nCoV/SARS-CoV-2_pipeline/bin/AlignVariant/../../lib/anaconda2/lib:$LD_LIBRARY_PATH && %(freebayes)s -t %(variantbed)s -p 1 -P 0 -C 10 --min-repeat-entropy 1.5 -q 13 -m 60 --min-coverage 10 -F 0.05 -f %(ref)s %(Stat_dir)s/%(sample)s.bam > %(Stat_dir)s/%(sample)s.raw.vcf && %(bcftools)s view --include 'FMT/GT=\"1/1\" && QUAL>=100 && FMT/DP>=10' %(Stat_dir)s/%(sample)s.raw.vcf > %(Stat_dir)s/%(sample)s.vcf\n%(bgzip)s -f %(Stat_dir)s/%(sample)s.vcf\n%(tabix)s %(Stat_dir)s/%(sample)s.vcf.gz\n"%{'freebayes':freebayes,'variantbed':variantbed,'Stat_dir':Stat_dir,'sample':sample,'ref':ref,'bgzip':bgzip,'tabix':tabix,'bcftools':bcftools})
+			script.write("export LD_LIBRARY_PATH=/ldfssz1/MGI_BIT/RUO/meizhiying/project/Multi_PCR_2019-nCoV/SARS-CoV-2_pipeline/bin/AlignVariant/../../lib/anaconda2/lib:$LD_LIBRARY_PATH && %(freebayes)s -t %(variantbed)s %(freebayes_param)s -f %(ref)s %(Stat_dir)s/%(sample)s.bam > %(Stat_dir)s/%(sample)s.raw.vcf && %(bcftools)s view --include 'FMT/GT=\"1/1\" && QUAL>=100 && FMT/DP>=100' %(Stat_dir)s/%(sample)s.raw.vcf > %(Stat_dir)s/%(sample)s.vcf\n%(bgzip)s -f %(Stat_dir)s/%(sample)s.vcf\n%(tabix)s %(Stat_dir)s/%(sample)s.vcf.gz\n"%{'freebayes':freebayes,'variantbed':variantbed,'Stat_dir':Stat_dir,'sample':sample,'ref':ref,'bgzip':bgzip,'tabix':tabix,'bcftools':bcftools,'freebayes_param':freebayes_param})
 			script.write("%(bcftools)s consensus -f %(Stat_dir)s/%(sample)s.reference1.fa -o %(Stat_dir)s/%(sample)s.Consensus.fa %(Stat_dir)s/%(sample)s.vcf.gz\n"%{'bcftools':bcftools,'Stat_dir':Stat_dir,'sample':sample})
 			script.write("sed -i \"s/MN908947.3 Wuhan seafood market pneumonia virus isolate Wuhan-Hu-1, complete genome/%(sample)s/g\" %(Stat_dir)s/%(sample)s.Consensus.fa\n"%{'Stat_dir':Stat_dir,'sample':sample})
 			script.write("less %(Stat_dir)s/%(sample)s.vcf.gz | grep -v '^#'|awk '{print $1\"\\t\"$2-1\"\\t\"$2\"\\t\"$4\"\\t\"$5}'| %(bedtools)s intersect -a - -b %(bed2)s -loj |cut -f 1,3-5,9 > %(Stat_dir)s/%(sample)s.vcf.anno\n"%{'Stat_dir':Stat_dir,'sample':sample,'bedtools':bedtools,'bed2':bed2})
@@ -230,6 +230,10 @@ if __name__ == '__main__':
 	tools = rootpath + '/tools'
 
 	# tools
+	try:
+		freebayes_param = jsonobj["freebayes_param"]
+	except:
+		freebayes_param = '-p 1 -q 20 -m 60 --min-coverage 100'
 	python3 = jsonobj["python3"]
 	python3_lib = jsonobj["python3_lib"]
 	Rscript = jsonobj["Rscript"]
@@ -267,7 +271,10 @@ if __name__ == '__main__':
 	variantbed = database + '/nCoV.variant.bed'
 	bed2 = database + '/wuhanRef.bed'
 	ref = database + '/nCov.fasta'
-	consensus_depth = jsonobj["consensus_depth"]
+	try:
+		consensus_depth = jsonobj["consensus_depth"]
+	except:
+		consensus_depth = 100
 	watchdog = bin+'/localsubmit/bin/watchDog_v1.0.pl'
 	qsubsge = rootpath+'/bin/qsub-sge.pl'
 	#queue = 'mgi.q'

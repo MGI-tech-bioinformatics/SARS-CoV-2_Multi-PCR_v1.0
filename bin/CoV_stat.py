@@ -147,7 +147,7 @@ def main():
 			if not os.path.exists('%s/%s/05.Stat'%(resultdir,sample)):
 				os.makedirs('%s/%s/05.Stat'%(resultdir,sample))
 			file_QC_stat = open('%s/%s/05.Stat/QC.txt'%(resultdir,sample),'w')
-			file_iden_out = open('%s/%s/05.Stat/Identification.txt'%(resultdir,sample),'w')
+			file_iden_out = open('%s/%s/05.Stat/Identification.txt'%(resultdir,sample),'w',encoding='utf-8')
 			stat_sample(resultdir,sample,out_dict,lambda_dict)
 			lambda_reads = lambda_dict['Target_reads']
 			try:

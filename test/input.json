@@ -3,6 +3,8 @@
   "sample_list": "path/to/sample.list",
   "workdir": "path/to/workdir",
   "SplitData": "1M",
+  "freebayes_param": "-p 1 -q 20 -m 60 --min-coverage 100",
+  "consensus_depth": 100,
   "python3": "path/to/python3",
   "python3_lib": "path/to/PYTHONPATH",
   "Rscript": "path/to/Rscript",

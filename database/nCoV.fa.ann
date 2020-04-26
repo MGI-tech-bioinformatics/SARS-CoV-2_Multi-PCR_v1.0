@@ -1,7 +1,9 @@
-82486 3 11
+83869 4 11
 0 nCoV MN908947.3 Wuhan seafood market pneumonia virus isolate Wuhan-Hu-1, complete genome
 0 29903 0
 0 GAPDH hg19_dna range=chr12:6643585-6647665 5'pad=0 3'pad=0 strand=+ repeatMasking=none
 29903 4081 0
 0 lambda NC_001416.1 Enterobacteria phage lambda, complete genome
 33984 48502 0
+0 GAPDH_transcript hg19_knownGene_uc001qop.2 range=chr12:6643585-6647537 5'pad=0 3'pad=0 strand=+ repeatMasking=none
+82486 1383 0

@@ -49,15 +49,17 @@ Notes: The above dependent software needs to be installed separately according t
 ## Usage
 ### 1.Prepare the input.json file
 The details for input.json file are as follows:
-* FqType, sequencing type(PE100/SE50). 
+* FqType, sequencing type(PE100/SE50...). 
 * sample_list, sample list file(sample_name/barcode_information/data_path).  
 * workdir, analysis result directory.  
-* SplitData, downsampling size of each sample(1G/1M/1K).
-* python3, path to python3.
-* python3_lib, path to python3 library.
-* Rscript, path to Rscript.
-* R_lib, path to R library.
-* tools(bwa,samtools....), path to this tool.
+* SplitData, downsampling size of each sample(1G/1M/1K). 
+* freebayes_param, param of freebayes. 
+* consensus_depth, threshold of point depth for consensus sequence.[1~100.Default:100] 
+* python3, path to python3. 
+* python3_lib, path to python3 library. 
+* Rscript, path to Rscript. 
+* R_lib, path to R library. 
+* tools(bwa,samtools....), path to this tool. 
 
 ### 2.Run the pipeline.
 ```

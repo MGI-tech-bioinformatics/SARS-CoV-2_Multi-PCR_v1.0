@@ -53,7 +53,7 @@ The details for input.json file are as follows:
 * sample_list, sample list file(sample_name/barcode_information/data_path).  
 * workdir, analysis result directory.  
 * SplitData, downsampling size of each sample(1G/1M/1K). 
-* freebayes_param, param of freebayes. 
+* freebayes_param, param of freebayes.In particular,the parameter '-p 1' is necessary. 
 * consensus_depth, threshold of point depth for consensus sequence.[1~100.Default:100] 
 * python3, path to python3. 
 * python3_lib, path to python3 library. 

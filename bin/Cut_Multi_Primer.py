@@ -108,11 +108,17 @@ if __name__ == '__main__':
 
 	fq1_dict = {}
 	fq2_dict = {}
-	fq_dict = {}
+	#fq_dict = {}
 	abnormal_set = set()
 
 	n = 0
 	a = 0
+
+	if FqType == 'PE':
+		file_out1 = open(outfq1,'w')
+		file_out2 = open(outfq2,'w')
+	elif FqType == 'SE':
+		file_out = open(outfq,'w')
 
 	for r in file_inbam:
 		n += 1
@@ -138,23 +144,23 @@ if __name__ == '__main__':
 				fq1_dict[readid] = '@%s/1\n%s\n%s\n%s\n'%(readid,cut_seq,'+',cut_qua)
 			else:
 				fq2_dict[readid] = '@%s/2\n%s\n%s\n%s\n'%(readid,cut_seq,'+',cut_qua)
+			if readid in fq1_dict and readid in fq2_dict:
+				file_out1.write(fq1_dict[readid])
+				file_out2.write(fq2_dict[readid])
+				del fq1_dict[readid]
+				del fq2_dict[readid]
 		elif FqType == 'SE':
-			fq_dict[readid] = '@%s\n%s\n%s\n%s\n'%(readid,cut_seq,'+',cut_qua)
-	if FqType == 'PE':
-		file_out1 = open(outfq1,'w')
-		file_out2 = open(outfq2,'w')
-		file_log = open(log,'w')
-		file_log.write('Fraction of invalid reads: '+str('%.3f'%(100*a/n))+'%\n')
-		for key, value in fq1_dict.items():
-			if key in abnormal_set:
-				continue
-			file_out1.write(value)
-			file_out2.write(fq2_dict[key])
+			#fq_dict[readid] = '@%s\n%s\n%s\n%s\n'%(readid,cut_seq,'+',cut_qua)
+			file_out.write('@%s\n%s\n%s\n%s\n'%(readid,cut_seq,'+',cut_qua))
 
-		file_inbam.close()
+	file_inbam.close()
+	file_log = open(log,'w')
+	file_log.write('Fraction of invalid reads: '+str('%.3f'%(100*a/n))+'%\n')
+	file_log.close()
+
+	if FqType == 'PE':
 		file_out1.close()
 		file_out2.close()
-		file_log.close()
 
 		if os.path.exists(outfq1+'.gz'):
 			check_call('rm %s.gz'%(outfq1),shell=True)
@@ -169,14 +175,6 @@ if __name__ == '__main__':
 
 		print('[',time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),'] Finished processing ')
 	elif FqType == 'SE':
-		file_out = open(outfq,'w')
-		file_log = open(log,'w')
-		file_log.write('Fraction of invalid reads: '+str('%.3f'%(100*a/n))+'%\n')
-		for key, value in fq_dict.items():
-			if key in abnormal_set:
-				continue
-			file_out.write(value)
-		file_inbam.close()
 		file_out.close()
 		file_log.close()
 

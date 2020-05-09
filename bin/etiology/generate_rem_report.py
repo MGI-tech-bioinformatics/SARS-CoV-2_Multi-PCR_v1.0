@@ -199,7 +199,7 @@ def generate_html_report(path, name='rem', output_path='E:/codezlims/rem/Result/
                         <p>4. 原始Reads：原始reads数；</p>
                         <p>5. Clean_Reads：clean reads数；</p>
                         <p>6. Clean_Rate：clean reads数/原始reads数*100%；</p>
-                        <p>7. 比对率：与3个目标参考序列（人工DNA，DAPDH和新冠病毒）总的比对率；</p>
+                        <p>7. 比对率：与3个目标参考序列（lambda DNA，GAPDH和新冠病毒）总的比对率；</p>
                 '''
     else:
         html += '''
@@ -209,7 +209,7 @@ def generate_html_report(path, name='rem', output_path='E:/codezlims/rem/Result/
                         <p>4. Raw_Reads：The number of raw FASTQ;</p>
                         <p>5. Clean_Reads：The number of clean FASTQ;</p>
                         <p>6. Clean_Rate：The ratio of clean FASTQ/raw FASTQ;</p>
-                        <p>7. Mapping_Rate: The mapping ratio of clean fastq maps against three reference sequences (artificial DNA, DAPDH, coronavirus);</p>
+                        <p>7. Mapping_Rate: The mapping ratio of clean fastq maps against three reference sequences (lambda DNA, GAPDH, coronavirus);</p>
                 '''
 
     html += ''' 
@@ -264,19 +264,19 @@ def generate_html_report(path, name='rem', output_path='E:/codezlims/rem/Result/
         html += '''<p>1. 样本：样品名；</p>
                    <p>2. Clean_Reads：clean reads数；</p>
                    <p>3. SARS-CoV-2_Reads：鉴定出的新冠病毒read数；</p>
-                   <p>4. SARS-CoV-2_Reads_Pct：鉴定出的新冠病毒比例，等于SARS-CoV-2 reads number/clean reads number*100%；</p>
+                   <p>4. SARS-CoV-2_Reads_Pct：鉴定出的新冠病毒比例，等于100%*(SARS-CoV-2 reads number)/((lambda DNA reads number)+(SARS-CoV-2 reads number))；</p>
                    <p>5. ≥1X_Coverage：鉴定出的新冠病毒reads与reference的比对后统计≥1X的覆盖度；</p>
                    <p>6. ≥100X_Coverage：鉴定出的新冠病毒reads与reference的比对后统计≥100X的覆盖度；</p>
-                   <p>7. Identification_Result：和同批次的阴性对照水进行比较，如果大于或等于水中病毒比例的5倍，为阳性；3-5倍为灰区；小于等于3倍为阴性；</p>
+                   <p>7. Identification_Result：SARS-CoV-2_Reads_Pct大于或等于0.1%，为阳性；0.05%-0.1%为灰区；小于0.05为阴性；</p>
                 '''
     else:
         html += '''<p>1. Sample: Sample name;</p>
                    <p>2. Clean_Reads: The number of clean FASTQ;</p>
                    <p>3. SARS-CoV-2_Reads: The reads number of identified SARS-CoV-2;</p>
-                   <p>4. SARS-CoV-2_Reads_Pct: The proportion of SARS-CoV-2 reads account for clean FASTQ;</p>
+                   <p>4. SARS-CoV-2_Reads_Pct: The proportion of SARS-CoV-2 reads: 100%*(SARS-CoV-2 reads number)/((lambda DNA reads number)+(SARS-CoV-2 reads number));</p>
                    <p>5. ≥1X_Coverage: The coverage is calculated as proportion of reference genome covered by more than 1 folds reads;</p>
                    <p>6. ≥100X_Coverage: The coverage is calculated as proportion of reference genome covered by more than 100 folds reads;</p>
-                   <p>7. Identification_Result: Sample identification result compared with negative sample;</p>
+                   <p>7. Identification_Result: Sample identification result according to SARS-CoV-2_Reads_Pct: Positive(≥0.1%), Indetermination(0.05%-0.1%), Negative(<0.05%);</p>
                 '''  
     html +=     '''
                 </div>   

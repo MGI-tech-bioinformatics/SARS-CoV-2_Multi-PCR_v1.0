@@ -148,7 +148,7 @@ def AlignVariant(script,fqtype,cutprimer_list,consensus_depth):
 			script.write("%(samtools)s depth -d 100000000 -a -b %(virusbed)s %(Align_dir)s/%(sample)s.sort.bam > %(Stat_dir)s/%(sample)s.depth\n"%{'samtools':samtools,'virusbed':virusbed,'Align_dir':Align_dir,'sample':sample,'Stat_dir':Stat_dir})
 			script.write("export R_LIBS=%(R_lib)s:$R_LIBS && %(Rscript)s %(bin)s/line.depth.R %(Stat_dir)s/%(sample)s.draw.depth %(Stat_dir)s/Windows.Depth.svg\n"%{'Rscript':Rscript,'bin':bin,'Stat_dir':Stat_dir,'R_lib':R_lib,'sample':sample})
 			script.write("%(bin)s/Consensus.pl %(Stat_dir)s/%(sample)s.depth %(ref)s %(consensus_depth)s %(Stat_dir)s/%(sample)s.reference1.fa\n"%{'bin':bin,'Stat_dir':Stat_dir,'sample':sample,'ref':ref,'consensus_depth':consensus_depth})
-			script.write("%(freebayes)s -t %(variantbed)s %(freebayes_param)s -f %(ref)s %(Stat_dir)s/%(sample)s.bam > %(Stat_dir)s/%(sample)s.raw.vcf && %(bcftools)s view --include 'FMT/GT=\"1\" && QUAL>=100 && FMT/DP>=100 && (FMT/AO[0])/(FMT/DP)>=0.6' %(Stat_dir)s/%(sample)s.raw.vcf > %(Stat_dir)s/%(sample)s.vcf\n%(bgzip)s -f %(Stat_dir)s/%(sample)s.vcf\n%(tabix)s %(Stat_dir)s/%(sample)s.vcf.gz\n"%{'freebayes':freebayes,'variantbed':variantbed,'Stat_dir':Stat_dir,'sample':sample,'ref':ref,'bgzip':bgzip,'tabix':tabix,'bcftools':bcftools,'freebayes_param':freebayes_param})
+			script.write("%(freebayes)s -t %(variantbed)s %(freebayes_param)s -f %(ref)s %(Stat_dir)s/%(sample)s.bam > %(Stat_dir)s/%(sample)s.raw.vcf && %(bcftools)s view --include 'FMT/GT=\"1\" && QUAL>=100 && FMT/DP>=30 && (FMT/AO[0])/(FMT/DP)>=0.6' %(Stat_dir)s/%(sample)s.raw.vcf > %(Stat_dir)s/%(sample)s.vcf\n%(bgzip)s -f %(Stat_dir)s/%(sample)s.vcf\n%(tabix)s %(Stat_dir)s/%(sample)s.vcf.gz\n"%{'freebayes':freebayes,'variantbed':variantbed,'Stat_dir':Stat_dir,'sample':sample,'ref':ref,'bgzip':bgzip,'tabix':tabix,'bcftools':bcftools,'freebayes_param':freebayes_param})
 			script.write("%(bcftools)s consensus -f %(Stat_dir)s/%(sample)s.reference1.fa -o %(Stat_dir)s/%(sample)s.Consensus.fa %(Stat_dir)s/%(sample)s.vcf.gz\n"%{'bcftools':bcftools,'Stat_dir':Stat_dir,'sample':sample})
 			script.write("sed -i \"s/MN908947.3 Wuhan seafood market pneumonia virus isolate Wuhan-Hu-1, complete genome/%(sample)s/g\" %(Stat_dir)s/%(sample)s.Consensus.fa\n"%{'Stat_dir':Stat_dir,'sample':sample})
 			script.write("less %(Stat_dir)s/%(sample)s.vcf.gz | grep -v '^#'|awk '{print $1\"\\t\"$2-1\"\\t\"$2\"\\t\"$4\"\\t\"$5}'| %(bedtools)s intersect -a - -b %(bed2)s -loj |cut -f 1,3-5,9 > %(Stat_dir)s/%(sample)s.vcf.anno\n"%{'Stat_dir':Stat_dir,'sample':sample,'bedtools':bedtools,'bed2':bed2})
@@ -158,7 +158,6 @@ def AlignVariant(script,fqtype,cutprimer_list,consensus_depth):
 def GetReport(script,sample):
 	sample_dir = result_dir + '/' + sample
 	Stat_dir = sample_dir + '/05.Stat'
-	#script.write("perl %(bin)s/txt2excel %(Stat_dir)s/QC.txt %(Stat_dir)s/QC.xlsx\nperl %(bin)s/txt2excel %(Stat_dir)s/Identification.txt %(Stat_dir)s/Identification.xlsx\n%(python3)s %(bin)s/etiology/generate_rem_report.py %(Stat_dir)s %(sample)s \n"\
 	script.write("%(python3)s %(bin)s/etiology/generate_rem_report.py %(Stat_dir)s %(sample)s \n"\
 		%{'bin':bin,'Stat_dir':Stat_dir,'sample':sample,'python3':python3})
 	return
@@ -234,7 +233,7 @@ if __name__ == '__main__':
 	try:
 		freebayes_param = jsonobj["freebayes_param"]
 	except:
-		freebayes_param = '-p 1 -q 20 -m 60 --min-coverage 100'
+		freebayes_param = '-p 1 -q 20 -m 60 --min-coverage 30'
 	python3 = jsonobj["python3"]
 	python3_lib = jsonobj["python3_lib"]
 	Rscript = jsonobj["Rscript"]
@@ -275,7 +274,7 @@ if __name__ == '__main__':
 	try:
 		consensus_depth = jsonobj["consensus_depth"]
 	except:
-		consensus_depth = 100
+		consensus_depth = 30
 	watchdog = bin+'/localsubmit/bin/watchDog_v1.0.pl'
 	qsubsge = rootpath+'/bin/qsub-sge.pl'
 	queue = 'mgi.q'

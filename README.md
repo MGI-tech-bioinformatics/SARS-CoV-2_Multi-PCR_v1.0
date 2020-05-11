@@ -7,10 +7,11 @@ This pipeline could accurately and efficiently identify SARS-CoV-2 reads from mu
 ![Image](https://github.com/MGI-tech-bioinformatics/SARS-CoV-2_Multi-PCR_v1.0/blob/master/Pipeline.png)
 
 ## Updates:
-May 9, 2020
+May 11, 2020
 1. Adjust the min depth threshold of freebayes from 100 to 30  
 2. Updated Cut_Multi_Primer.py to save more memory  
 3. Fixed some errors in the HTML report
+4. Fixed a bug in consensus fasta
 
 ## Requirements:
 Before running this pipeline, you need to make sure that several pieces of software and/or modules are installed on the system:  

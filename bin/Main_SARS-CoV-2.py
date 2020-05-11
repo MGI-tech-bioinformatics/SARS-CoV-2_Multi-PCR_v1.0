@@ -145,7 +145,7 @@ def AlignVariant(script,fqtype,cutprimer_list,consensus_depth):
 			script.write("%(samtools)s index %(Stat_dir)s/%(sample)s.bam\n"%{'samtools':samtools,'Stat_dir':Stat_dir,'sample':sample})
 			script.write("%(mosdepth)s -n --fast-mode --by 100 %(Stat_dir)s/depth %(Stat_dir)s/%(sample)s.bam\n"%{'mosdepth':mosdepth,'Stat_dir':Stat_dir,'sample':sample})
 			script.write("less %(Stat_dir)s/depth.regions.bed.gz|awk  '{print NR\"\\t\"log($4+0.1)}' > %(Stat_dir)s/%(sample)s.draw.depth\n"%{'Stat_dir':Stat_dir,'sample':sample})
-			script.write("%(samtools)s depth -d 100000000 -a -b %(virusbed)s %(Align_dir)s/%(sample)s.sort.bam > %(Stat_dir)s/%(sample)s.depth\n"%{'samtools':samtools,'virusbed':virusbed,'Align_dir':Align_dir,'sample':sample,'Stat_dir':Stat_dir})
+			script.write("%(samtools)s depth -d 100000000 -a -b %(virusbed_cutprimer)s %(Stat_dir)s/%(sample)s.bam > %(Stat_dir)s/%(sample)s.depth\n"%{'samtools':samtools,'virusbed_cutprimer':virusbed_cutprimer,'sample':sample,'Stat_dir':Stat_dir})
 			script.write("export R_LIBS=%(R_lib)s:$R_LIBS && %(Rscript)s %(bin)s/line.depth.R %(Stat_dir)s/%(sample)s.draw.depth %(Stat_dir)s/Windows.Depth.svg\n"%{'Rscript':Rscript,'bin':bin,'Stat_dir':Stat_dir,'R_lib':R_lib,'sample':sample})
 			script.write("%(bin)s/Consensus.pl %(Stat_dir)s/%(sample)s.depth %(ref)s %(consensus_depth)s %(Stat_dir)s/%(sample)s.reference1.fa\n"%{'bin':bin,'Stat_dir':Stat_dir,'sample':sample,'ref':ref,'consensus_depth':consensus_depth})
 			script.write("%(freebayes)s -t %(variantbed)s %(freebayes_param)s -f %(ref)s %(Stat_dir)s/%(sample)s.bam > %(Stat_dir)s/%(sample)s.raw.vcf && %(bcftools)s view --include 'FMT/GT=\"1\" && QUAL>=100 && FMT/DP>=30 && (FMT/AO[0])/(FMT/DP)>=0.6' %(Stat_dir)s/%(sample)s.raw.vcf > %(Stat_dir)s/%(sample)s.vcf\n%(bgzip)s -f %(Stat_dir)s/%(sample)s.vcf\n%(tabix)s %(Stat_dir)s/%(sample)s.vcf.gz\n"%{'freebayes':freebayes,'variantbed':variantbed,'Stat_dir':Stat_dir,'sample':sample,'ref':ref,'bgzip':bgzip,'tabix':tabix,'bcftools':bcftools,'freebayes_param':freebayes_param})
@@ -267,6 +267,7 @@ if __name__ == '__main__':
 	barcode_file = jsonobj["sample_list"]
 	#snpbed = jsonobj["targetregion"]
 	virusbed = database + '/nCoV.virus.bed'
+	virusbed_cutprimer = database + '/nCoV.virus.cutprimer.bed'
 	lambdabed = database + '/nCoV.lambda.bed'
 	variantbed = database + '/nCoV.variant.bed'
 	bed2 = database + '/wuhanRef.bed'

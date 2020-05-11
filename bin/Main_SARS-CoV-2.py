@@ -87,7 +87,7 @@ def bwaaln(script,barcode,fqtype,read_len):
 		cleanfq2 = Clean_dir + '/Clean_' + barcode + '_2.fq.gz'
 		script.write("%(bwa)s aln -l %(seed_len)s -k %(max_diff_seed)s -t 3 -f %(Align_dir)s/%(barcode)s_1.sai %(database)s/nCoV.fa %(cleanfq1)s && %(bwa)s aln -l %(seed_len)s -k %(max_diff_seed)s -t 3 -f %(Align_dir)s/%(barcode)s_2.sai %(database)s/nCoV.fa %(cleanfq2)s && %(bwa)s sampe -a 1000 -r \"@RG\\tID:PE100\\tPL:MGISEQ\\tPU:PE100\\tLB:mutPCR\\tSM:%(barcode)s\\tCN:BGI\" %(database)s/nCoV.fa %(Align_dir)s/%(barcode)s_1.sai %(Align_dir)s/%(barcode)s_2.sai %(cleanfq1)s %(cleanfq2)s | %(samtools)s view -b - | %(samtools)s sort -T %(Align_dir)s/%(barcode)s.sort -o %(Align_dir)s/%(barcode)s.sort.bam - && rm %(Align_dir)s/%(barcode)s_1.sai %(Align_dir)s/%(barcode)s_2.sai\n" \
 			%{'bwa':bwa,'samtools':samtools,'database':database,'cleanfq1':cleanfq1,'cleanfq2':cleanfq2,'Align_dir':Align_dir,'barcode':barcode,'seed_len':seed_len,'max_diff_seed':max_diff_seed})
-		script.write("%(samtools)s index %(Align_dir)s/%(barcode)s.sort.bam \n" %{'samtools':samtools,'Align_dir':Align_dir,'barcode':barcode,'seed_len':seed_len})
+		script.write("%(samtools)s index %(Align_dir)s/%(barcode)s.sort.bam \n" %{'samtools':samtools,'Align_dir':Align_dir,'barcode':barcode})
 	return
 
 def CovDep(script,barcode):

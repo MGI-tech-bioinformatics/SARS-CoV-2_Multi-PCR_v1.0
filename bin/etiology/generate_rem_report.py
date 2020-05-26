@@ -75,7 +75,7 @@ def setWarpTitle(title):
 def getTableContent(fileName, isWarpTitle = True, lang = 'cn'):
     try:
         content = ""
-        with open(fileName, 'r') as fh:
+        with open(fileName, 'r', encoding='utf-8') as fh:
             rowNum = 0
             for line in fh:
                 line = line.strip()

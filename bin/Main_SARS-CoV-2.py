@@ -41,13 +41,15 @@ def CleanData(script,sample,barcode,fqtype,SplitData):
 			t_dict = {'G':10**9,'M':10**6,'K':10**3}
 			SplitData_n = float(SplitData.strip()[0:-1])*t_dict[SplitData.strip()[-1]]
 			splitfq = Clean_dir + '/Split_' + sample + '.fq'
-			script.write("%(seqtk)s sample -s100 %(rawfq)s %(SplitData_n)s > %(splitfq)s && gzip %(splitfq)s && "\
+			script.write("%(seqtk)s sample -s100 %(rawfq)s %(SplitData_n)s > %(splitfq)s && gzip -f %(splitfq)s && "\
 				%{'seqtk':seqtk,'rawfq':rawfq,'splitfq':splitfq,'SplitData_n':SplitData_n})
-			script.write("%(SOAPnuke)s filter -l 10 -q 0.2 -n 0.05 -Q 2 -G -T 1 -f AAGTCGGAGGCCAAGCGGTCTTAGGAAGACAA -1 %(splitfq)s.gz -C %(cleanfq)s -o %(Clean_dir)s \n"\
-				%{'SOAPnuke':SOAPnuke,'splitfq':splitfq,'cleanfq':cleanfq,'Clean_dir':Clean_dir})
+			#script.write("%(SOAPnuke)s filter -l 10 -q 0.2 -n 0.05 -Q 2 -G -T 1 -f AAGTCGGAGGCCAAGCGGTCTTAGGAAGACAA -1 %(splitfq)s.gz -C %(cleanfq)s -o %(Clean_dir)s \n"\
+			script.write("%(SOAPnuke)s filter %(SOAPnuke_param)s -1 %(splitfq)s.gz -C %(cleanfq)s -o %(Clean_dir)s \n"\
+				%{'SOAPnuke':SOAPnuke,'SOAPnuke_param':SOAPnuke_param,'splitfq':splitfq,'cleanfq':cleanfq,'Clean_dir':Clean_dir})
 		else:
-			script.write("%(SOAPnuke)s filter -l 10 -q 0.2 -n 0.05 -Q 2 -G -T 1 -f AAGTCGGAGGCCAAGCGGTCTTAGGAAGACAA -1 %(rawfq)s -C %(cleanfq)s -o %(Clean_dir)s \n"\
-				%{'SOAPnuke':SOAPnuke,'rawfq':rawfq,'cleanfq':cleanfq,'Clean_dir':Clean_dir})
+			#script.write("%(SOAPnuke)s filter -l 10 -q 0.2 -n 0.05 -Q 2 -G -T 1 -f AAGTCGGAGGCCAAGCGGTCTTAGGAAGACAA -1 %(rawfq)s -C %(cleanfq)s -o %(Clean_dir)s \n"\
+			script.write("%(SOAPnuke)s filter %(SOAPnuke_param)s -1 %(rawfq)s -C %(cleanfq)s -o %(Clean_dir)s \n"\
+				%{'SOAPnuke':SOAPnuke,'SOAPnuke_param':SOAPnuke_param,'rawfq':rawfq,'cleanfq':cleanfq,'Clean_dir':Clean_dir})
 	elif fqtype == 'PE':
 		rawfq1 = raw_data_path + '/*' + barcode + '_1.fq.gz'
 		rawfq2 = raw_data_path + '/*' + barcode + '_2.fq.gz'
@@ -59,13 +61,15 @@ def CleanData(script,sample,barcode,fqtype,SplitData):
 			SplitData_n = float(SplitData.strip()[0:-1])*t_dict[SplitData.strip()[-1]]/2
 			splitfq1 = Clean_dir + '/Split_' + sample + '_1.fq'
 			splitfq2 = Clean_dir + '/Split_' + sample + '_2.fq'
-			script.write("%(seqtk)s sample -s100 %(rawfq1)s %(SplitData_n)s > %(splitfq1)s && gzip %(splitfq1)s && %(seqtk)s sample -s100 %(rawfq2)s %(SplitData_n)s > %(splitfq2)s && gzip %(splitfq2)s && "\
+			script.write("%(seqtk)s sample -s100 %(rawfq1)s %(SplitData_n)s > %(splitfq1)s && gzip -f %(splitfq1)s && %(seqtk)s sample -s100 %(rawfq2)s %(SplitData_n)s > %(splitfq2)s && gzip -f %(splitfq2)s && "\
 				%{'seqtk':seqtk,'rawfq1':rawfq1,'rawfq2':rawfq2,'splitfq1':splitfq1,'splitfq2':splitfq2,'SplitData_n':SplitData_n})
-			script.write("%(SOAPnuke)s filter -l 10 -q 0.2 -n 0.05 -Q 2 -G -T 1 -f AAGTCGGAGGCCAAGCGGTCTTAGGAAGACAA  -r AAGTCGGATCGTAGCCATGTCGTTCTGTGAGCCAAGGAGTTG -1 %(splitfq1)s.gz -2 %(splitfq2)s.gz -C %(cleanfq1)s -D %(cleanfq2)s -o %(Clean_dir)s \n"\
-				%{'SOAPnuke':SOAPnuke,'splitfq1':splitfq1,'splitfq2':splitfq2,'cleanfq1':cleanfq1,'cleanfq2':cleanfq2,'Clean_dir':Clean_dir})
+			#script.write("%(SOAPnuke)s filter -l 10 -q 0.2 -n 0.05 -Q 2 -G -T 1 -f AAGTCGGAGGCCAAGCGGTCTTAGGAAGACAA  -r AAGTCGGATCGTAGCCATGTCGTTCTGTGAGCCAAGGAGTTG -1 %(splitfq1)s.gz -2 %(splitfq2)s.gz -C %(cleanfq1)s -D %(cleanfq2)s -o %(Clean_dir)s \n"\
+			script.write("%(SOAPnuke)s filter %(SOAPnuke_param)s -1 %(splitfq1)s.gz -2 %(splitfq2)s.gz -C %(cleanfq1)s -D %(cleanfq2)s -o %(Clean_dir)s \n"\
+				%{'SOAPnuke':SOAPnuke,'SOAPnuke_param':SOAPnuke_param,'splitfq1':splitfq1,'splitfq2':splitfq2,'cleanfq1':cleanfq1,'cleanfq2':cleanfq2,'Clean_dir':Clean_dir})
 		else:
-			script.write("%(SOAPnuke)s filter -l 10 -q 0.2 -n 0.05 -Q 2 -G -T 1 -f AAGTCGGAGGCCAAGCGGTCTTAGGAAGACAA  -r AAGTCGGATCGTAGCCATGTCGTTCTGTGAGCCAAGGAGTTG -1 %(rawfq1)s -2 %(rawfq2)s -C %(cleanfq1)s -D %(cleanfq2)s -o %(Clean_dir)s \n"\
-			%{'SOAPnuke':SOAPnuke,'rawfq1':rawfq1,'rawfq2':rawfq2,'cleanfq1':cleanfq1,'cleanfq2':cleanfq2,'Clean_dir':Clean_dir})
+			#script.write("%(SOAPnuke)s filter -l 10 -q 0.2 -n 0.05 -Q 2 -G -T 1 -f AAGTCGGAGGCCAAGCGGTCTTAGGAAGACAA  -r AAGTCGGATCGTAGCCATGTCGTTCTGTGAGCCAAGGAGTTG -1 %(rawfq1)s -2 %(rawfq2)s -C %(cleanfq1)s -D %(cleanfq2)s -o %(Clean_dir)s \n"\
+			script.write("%(SOAPnuke)s filter %(SOAPnuke_param)s -1 %(rawfq1)s -2 %(rawfq2)s -C %(cleanfq1)s -D %(cleanfq2)s -o %(Clean_dir)s \n"\
+			%{'SOAPnuke':SOAPnuke,'SOAPnuke_param':SOAPnuke_param,'rawfq1':rawfq1,'rawfq2':rawfq2,'cleanfq1':cleanfq1,'cleanfq2':cleanfq2,'Clean_dir':Clean_dir})
 	else:
 		fqtype_error()
 	return
@@ -147,8 +151,8 @@ def AlignVariant(script,fqtype,cutprimer_list,consensus_depth):
 			script.write("less %(Stat_dir)s/depth.regions.bed.gz|awk  '{print NR\"\\t\"log($4+0.1)}' > %(Stat_dir)s/%(sample)s.draw.depth\n"%{'Stat_dir':Stat_dir,'sample':sample})
 			script.write("%(samtools)s depth -d 100000000 -a -b %(virusbed_cutprimer)s %(Stat_dir)s/%(sample)s.bam > %(Stat_dir)s/%(sample)s.depth\n"%{'samtools':samtools,'virusbed_cutprimer':virusbed_cutprimer,'sample':sample,'Stat_dir':Stat_dir})
 			script.write("export R_LIBS=%(R_lib)s:$R_LIBS && %(Rscript)s %(bin)s/line.depth.R %(Stat_dir)s/%(sample)s.draw.depth %(Stat_dir)s/Windows.Depth.svg\n"%{'Rscript':Rscript,'bin':bin,'Stat_dir':Stat_dir,'R_lib':R_lib,'sample':sample})
-			script.write("%(bin)s/Consensus.pl %(Stat_dir)s/%(sample)s.depth %(ref)s %(consensus_depth)s %(Stat_dir)s/%(sample)s.reference1.fa\n"%{'bin':bin,'Stat_dir':Stat_dir,'sample':sample,'ref':ref,'consensus_depth':consensus_depth})
 			script.write("%(freebayes)s -t %(variantbed)s %(freebayes_param)s -f %(ref)s %(Stat_dir)s/%(sample)s.bam > %(Stat_dir)s/%(sample)s.raw.vcf && %(bcftools)s view --include 'FMT/GT=\"1\" && QUAL>=100 && FMT/DP>=30 && (FMT/AO[0])/(FMT/DP)>=0.6' %(Stat_dir)s/%(sample)s.raw.vcf > %(Stat_dir)s/%(sample)s.vcf\n%(bgzip)s -f %(Stat_dir)s/%(sample)s.vcf\n%(tabix)s %(Stat_dir)s/%(sample)s.vcf.gz\n"%{'freebayes':freebayes,'variantbed':variantbed,'Stat_dir':Stat_dir,'sample':sample,'ref':ref,'bgzip':bgzip,'tabix':tabix,'bcftools':bcftools,'freebayes_param':freebayes_param})
+			script.write("%(bin)s/Consensus.pl %(Stat_dir)s/%(sample)s.depth %(ref)s %(consensus_depth)s %(Stat_dir)s/%(sample)s.reference1.fa %(Stat_dir)s/%(sample)s.vcf.gz\n"%{'bin':bin,'Stat_dir':Stat_dir,'sample':sample,'ref':ref,'consensus_depth':consensus_depth})
 			script.write("%(bcftools)s consensus -f %(Stat_dir)s/%(sample)s.reference1.fa -o %(Stat_dir)s/%(sample)s.Consensus.fa %(Stat_dir)s/%(sample)s.vcf.gz\n"%{'bcftools':bcftools,'Stat_dir':Stat_dir,'sample':sample})
 			script.write("sed -i \"s/MN908947.3 Wuhan seafood market pneumonia virus isolate Wuhan-Hu-1, complete genome/%(sample)s/g\" %(Stat_dir)s/%(sample)s.Consensus.fa\n"%{'Stat_dir':Stat_dir,'sample':sample})
 			script.write("less %(Stat_dir)s/%(sample)s.vcf.gz | grep -v '^#'|awk '{print $1\"\\t\"$2-1\"\\t\"$2\"\\t\"$4\"\\t\"$5}'| %(bedtools)s intersect -a - -b %(bed2)s -loj |cut -f 1,3-5,9 > %(Stat_dir)s/%(sample)s.vcf.anno\n"%{'Stat_dir':Stat_dir,'sample':sample,'bedtools':bedtools,'bed2':bed2})
@@ -229,7 +233,20 @@ if __name__ == '__main__':
 	database = rootpath + '/database'
 	tools = rootpath + '/tools'
 
+	fqtype_p = jsonobj["FqType"]
+	fqtype = fqtype_p[0:2]
+
 	# tools
+	try:
+		SOAPnuke_param = jsonobj["SOAPnuke_param"]
+	except:
+		if fqtype == 'PE':
+			SOAPnuke_param = '-l 10 -q 0.2 -n 0.05 -Q 2 -G -T 1 -f AAGTCGGAGGCCAAGCGGTCTTAGGAAGACAA  -r AAGTCGGATCGTAGCCATGTCGTTCTGTGAGCCAAGGAGTTG'
+		elif fqtype == 'SE':
+			SOAPnuke_param = '-l 10 -q 0.2 -n 0.05 -Q 2 -G -T 1 -f AAGTCGGAGGCCAAGCGGTCTTAGGAAGACAA'
+		else:
+			print('ERROR: Invalid FqType in json file.')
+			sys.exit(1)
 	try:
 		freebayes_param = jsonobj["freebayes_param"]
 	except:
@@ -261,8 +278,6 @@ if __name__ == '__main__':
 	#bamdst = '%s/bamdst'%(tools)
 	#SOAPnuke = '%s/SOAPnuke'%(tools)
 
-	fqtype_p = jsonobj["FqType"]
-	fqtype = fqtype_p[0:2]
 	read_len = fqtype_p[2:]
 	barcode_file = jsonobj["sample_list"]
 	#snpbed = jsonobj["targetregion"]

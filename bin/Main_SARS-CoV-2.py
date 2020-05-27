@@ -35,7 +35,8 @@ def CleanData(script,sample,barcode,fqtype,SplitData):
 	create_dirs(Clean_dir)
 	if fqtype == 'SE':
 		rawfq = raw_data_path + '/*' + barcode + '.fq.gz'
-		cleanfq = Clean_dir + '/Clean_' + sample + '.fq.gz'
+		#cleanfq = Clean_dir + '/Clean_' + sample + '.fq.gz'
+		cleanfq = 'Clean_' + sample + '.fq.gz'
 
 		if SplitData:
 			t_dict = {'G':10**9,'M':10**6,'K':10**3}
@@ -53,8 +54,10 @@ def CleanData(script,sample,barcode,fqtype,SplitData):
 	elif fqtype == 'PE':
 		rawfq1 = raw_data_path + '/*' + barcode + '_1.fq.gz'
 		rawfq2 = raw_data_path + '/*' + barcode + '_2.fq.gz'
-		cleanfq1 = Clean_dir + '/Clean_' + sample + '_1.fq.gz'
-		cleanfq2 = Clean_dir + '/Clean_' + sample + '_2.fq.gz'
+		#cleanfq1 = Clean_dir + '/Clean_' + sample + '_1.fq.gz'
+		#cleanfq2 = Clean_dir + '/Clean_' + sample + '_2.fq.gz'
+		cleanfq1 = 'Clean_' + sample + '_1.fq.gz'
+		cleanfq2 = 'Clean_' + sample + '_2.fq.gz'
 
 		if SplitData:
 			t_dict = {'G':10**9,'M':10**6,'K':10**3}

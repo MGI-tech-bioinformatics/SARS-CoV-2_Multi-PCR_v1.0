@@ -18,6 +18,8 @@ May 26, 2020
 2. Fixed a bug in consensus fasta,which cause an error during the generation of consensus sequence when there is an INDEL in vcf file.  
 3. Fixed a bug in generate_rem_report.py,which caused Identification.txt to display abnormally in the HTML report.  
 
+Jun 2, 2020
+1. Fixed a bug in Windows.Depth.svg
 
 ## Requirements:
 Before running this pipeline, you need to make sure that several pieces of software and/or modules are installed on the system:  

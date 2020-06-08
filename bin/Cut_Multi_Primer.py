@@ -108,8 +108,7 @@ if __name__ == '__main__':
 
 	fq1_dict = {}
 	fq2_dict = {}
-	#fq_dict = {}
-	abnormal_set = set()
+	#abnormal_set = set()
 
 	n = 0
 	a = 0
@@ -121,21 +120,25 @@ if __name__ == '__main__':
 		file_out = open(outfq,'w')
 
 	for r in file_inbam:
-		n += 1
+		#n += 1
 		readid = r.query_name
 		seq = r.seq
 		qua = r.qual
-		chrn = r.reference_name
-		pos = r.pos
-		cut_seq, cut_qua, result = cut_primer(chrn,pos,seq,qua,R1_set,R2_set)
-		if result == 'NA':
-			a += 1
-			abnormal_set.add(readid)
-			continue
-		if readid in abnormal_set:
+		try:
+			chrn = r.reference_name
+			pos = r.pos
+		except:
 			continue
 		if r.is_secondary:
 			continue
+		if chrn != 'nCoV' and n > 1:
+			continue
+		else:
+			n += 1
+		cut_seq, cut_qua, result = cut_primer(chrn,pos,seq,qua,R1_set,R2_set)
+		if result == 'NA':
+			a += 1
+			#abnormal_set.add(readid)
 		if r.is_reverse:
 			cut_seq = revcom(cut_seq)
 			cut_qua = cut_qua[::-1]
@@ -150,7 +153,6 @@ if __name__ == '__main__':
 				del fq1_dict[readid]
 				del fq2_dict[readid]
 		elif FqType == 'SE':
-			#fq_dict[readid] = '@%s\n%s\n%s\n%s\n'%(readid,cut_seq,'+',cut_qua)
 			file_out.write('@%s\n%s\n%s\n%s\n'%(readid,cut_seq,'+',cut_qua))
 
 	file_inbam.close()

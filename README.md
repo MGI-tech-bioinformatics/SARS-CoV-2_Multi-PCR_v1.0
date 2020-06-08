@@ -21,12 +21,16 @@ May 26, 2020
 Jun 2, 2020
 1. Fixed a bug in Windows.Depth.svg
 
+Jun 8, 2020
+1. Prepared install.sh, users can install required software by running this script.  
+2. Optimized Cut_Multi_Primer.py, this script only keeps virus reads now, which makes the primer cut step to run more efficient.  
+
 ## Requirements:
 Before running this pipeline, you need to make sure that several pieces of software and/or modules are installed on the system:  
 
-Perl: v5.26.0  
-Python: v3.4.3  
-R: v3.3.2
+Perl: >=v5.22.0  
+Python: >=v3.4.3  
+R: >=v3.3.2
 
 Library for Python3 and R:  
 * Python3: pysam,pandas,openpyxl  
@@ -42,7 +46,7 @@ Software for alignment and bam file statistics:
 * bamdst v1.0.6 (https://github.com/shiquan/bamdst)  
 
 Software for variant calling:  
-* freebayes v1.3.0 (http://cab.spbu.ru/software/spades/)  
+* freebayes v1.3.0 (https://github.com/ekg/freebayes)  
 
 Other required softwares:  
 * bedtools v2.26.0 (https://bedtools.readthedocs.io/en/latest/)
@@ -57,8 +61,12 @@ To clone the repository:
 
     git clone https://github.com/MGI-tech-bioinformatics/SARS-CoV-2_Multi-PCR_v1.0.git
 
+To install the required software:
 
-Notes: The above dependent software needs to be installed separately according to their instructions. After installing, the users should edit the input.json file, and change the software path to your own path.
+    cd SARS-CoV-2_Multi-PCR_v1.0; sh install.sh
+
+
+Notes: The install.sh will install the required software to SARS-CoV-2_Multi-PCR_v1.0/tools, if the software are not working,the above dependent software needs to be installed separately according to their instructions. The Perl,Python,R and their library need to be installed by users. After installing, users should edit the input.json file, and change the software path to your own path.
 
 
 ## Usage

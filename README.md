@@ -23,7 +23,10 @@ Jun 2, 2020
 
 Jun 8, 2020
 1. Prepared install.sh, users can install required software by running this script.  
-2. Optimized Cut_Multi_Primer.py, this script only keeps virus reads now, which makes the primer cut step to run more efficient.  
+2. Optimized Cut_Multi_Primer.py, this script only keeps virus reads now, which makes the primer cut step to run more efficiently.  
+
+Jun 24, 2020
+1. Fixed a bug in step6, we use zless to read .gz files.  
 
 ## Requirements:
 Before running this pipeline, you need to make sure that several pieces of software and/or modules are installed on the system:  

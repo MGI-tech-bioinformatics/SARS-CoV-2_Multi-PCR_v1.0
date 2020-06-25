@@ -151,14 +151,14 @@ def AlignVariant(script,fqtype,cutprimer_list,consensus_depth):
 					%{'bwa':bwa,'samtools':samtools,'sample':sample,'ref':ref,'fq':fq,'Stat_dir':Stat_dir})
 			script.write("%(samtools)s index %(Stat_dir)s/%(sample)s.bam\n"%{'samtools':samtools,'Stat_dir':Stat_dir,'sample':sample})
 			script.write("%(mosdepth)s -n --fast-mode --by 100 %(Stat_dir)s/depth %(Stat_dir)s/%(sample)s.bam\n"%{'mosdepth':mosdepth,'Stat_dir':Stat_dir,'sample':sample})
-			script.write("zless %(Stat_dir)s/depth.regions.bed.gz|awk  '{print NR\"\\t\"log($4+1)/log(10)}' > %(Stat_dir)s/%(sample)s.draw.depth\n"%{'Stat_dir':Stat_dir,'sample':sample})
+			script.write("zcat %(Stat_dir)s/depth.regions.bed.gz|awk  '{print NR\"\\t\"log($4+1)/log(10)}' > %(Stat_dir)s/%(sample)s.draw.depth\n"%{'Stat_dir':Stat_dir,'sample':sample})
 			script.write("%(samtools)s depth -d 100000000 -a -b %(virusbed_cutprimer)s %(Stat_dir)s/%(sample)s.bam > %(Stat_dir)s/%(sample)s.depth\n"%{'samtools':samtools,'virusbed_cutprimer':virusbed_cutprimer,'sample':sample,'Stat_dir':Stat_dir})
 			script.write("export R_LIBS=%(R_lib)s:$R_LIBS && %(Rscript)s %(bin)s/line.depth.R %(Stat_dir)s/%(sample)s.draw.depth %(Stat_dir)s/Windows.Depth.svg\n"%{'Rscript':Rscript,'bin':bin,'Stat_dir':Stat_dir,'R_lib':R_lib,'sample':sample})
 			script.write("%(freebayes)s -t %(variantbed)s %(freebayes_param)s -f %(ref)s %(Stat_dir)s/%(sample)s.bam > %(Stat_dir)s/%(sample)s.raw.vcf && %(bcftools)s view --include 'FMT/GT=\"1\" && QUAL>=100 && FMT/DP>=30' %(Stat_dir)s/%(sample)s.raw.vcf > %(Stat_dir)s/%(sample)s.vcf\n%(bgzip)s -f %(Stat_dir)s/%(sample)s.vcf\n%(tabix)s %(Stat_dir)s/%(sample)s.vcf.gz\n"%{'freebayes':freebayes,'variantbed':variantbed,'Stat_dir':Stat_dir,'sample':sample,'ref':ref,'bgzip':bgzip,'tabix':tabix,'bcftools':bcftools,'freebayes_param':freebayes_param})
 			script.write("%(bin)s/Consensus.pl %(Stat_dir)s/%(sample)s.depth %(ref)s %(consensus_depth)s %(Stat_dir)s/%(sample)s.reference1.fa %(Stat_dir)s/%(sample)s.vcf.gz\n"%{'bin':bin,'Stat_dir':Stat_dir,'sample':sample,'ref':ref,'consensus_depth':consensus_depth})
 			script.write("%(bcftools)s consensus -f %(Stat_dir)s/%(sample)s.reference1.fa -o %(Stat_dir)s/%(sample)s.Consensus.fa %(Stat_dir)s/%(sample)s.vcf.gz\n"%{'bcftools':bcftools,'Stat_dir':Stat_dir,'sample':sample})
 			script.write("sed -i \"s/MN908947.3 Wuhan seafood market pneumonia virus isolate Wuhan-Hu-1, complete genome/%(sample)s/g\" %(Stat_dir)s/%(sample)s.Consensus.fa\n"%{'Stat_dir':Stat_dir,'sample':sample})
-			script.write("zless %(Stat_dir)s/%(sample)s.vcf.gz | grep -v '^#'|awk '{print $1\"\\t\"$2-1\"\\t\"$2\"\\t\"$4\"\\t\"$5}'| %(bedtools)s intersect -a - -b %(bed2)s -loj |cut -f 1,3-5,9 > %(Stat_dir)s/%(sample)s.vcf.anno\n"%{'Stat_dir':Stat_dir,'sample':sample,'bedtools':bedtools,'bed2':bed2})
+			script.write("zcat %(Stat_dir)s/%(sample)s.vcf.gz | grep -v '^#'|awk '{print $1\"\\t\"$2-1\"\\t\"$2\"\\t\"$4\"\\t\"$5}'| %(bedtools)s intersect -a - -b %(bed2)s -loj |cut -f 1,3-5,9 > %(Stat_dir)s/%(sample)s.vcf.anno\n"%{'Stat_dir':Stat_dir,'sample':sample,'bedtools':bedtools,'bed2':bed2})
 			script.write("rm %(Stat_dir)s/%(sample)s.draw.depth %(Stat_dir)s/%(sample)s.reference1.fa\n"%{'Stat_dir':Stat_dir,'sample':sample})
 	return
 

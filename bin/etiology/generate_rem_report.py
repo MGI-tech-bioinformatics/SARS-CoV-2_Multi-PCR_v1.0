@@ -263,20 +263,36 @@ def generate_html_report(path, name='rem', output_path='E:/codezlims/rem/Result/
     if lang == "cn":                
         html += '''<p>1. 样本：样品名；</p>
                    <p>2. Clean_Reads：clean reads数；</p>
-                   <p>3. SARS-CoV-2_Reads：鉴定出的新冠病毒read数；</p>
-                   <p>4. SARS-CoV-2_Reads_Pct：鉴定出的新冠病毒比例，等于100%*(SARS-CoV-2 reads number)/((lambda DNA reads number)+(SARS-CoV-2 reads number))；</p>
-                   <p>5. ≥1X_Coverage：鉴定出的新冠病毒reads与reference的比对后统计≥1X的覆盖度；</p>
-                   <p>6. ≥100X_Coverage：鉴定出的新冠病毒reads与reference的比对后统计≥100X的覆盖度；</p>
-                   <p>7. Identification_Result：SARS-CoV-2_Reads_Pct大于或等于0.1%，为阳性；0.05%-0.1%为灰区；小于0.05为阴性；</p>
+                   <p>3. GAPDH_Reads：GAPDH reads数：</p>
+                   <p>4. Lambda_Reads：Lambda reads数：</p>
+                   <p>5. SARS-CoV-2_Reads：鉴定出的新冠病毒read数；</p>
+                   <p>6. GAPDH_Rate：GAPDH reads比例：</p>
+                   <p>7. Lambda_Rate：Lambda reads比例：</p>
+                   <p>8. SARS-CoV-2_Reads_Pct：鉴定出的新冠病毒比例，等于100%*(SARS-CoV-2 reads number)/((lambda DNA reads number)+(SARS-CoV-2 reads number))；</p>
+                   <p>9. Genome_Average_Depth：新冠病毒全长基因组的平均深度；</p>
+                   <p>10. ≥1X_Region_Average_Depth：新冠病毒基因组≥1X区域的平均深度；</p>
+                   <p>11. ≥1X_Coverage：鉴定出的新冠病毒reads与reference的比对后统计≥1X的覆盖度；</p>
+                   <p>12. ≥1X_size：新冠病毒≥1X的区域长度；</p>
+                   <p>13. ≥100X_Coverage：鉴定出的新冠病毒reads与reference的比对后统计≥100X的覆盖度；</p>
+                   <p>14. ≥100X_size：新冠病毒≥100X的区域长度；</p>
+                   <p>15. Identification_Result：SARS-CoV-2_Reads_Pct大于或等于0.1%，为阳性；0.05%-0.1%为灰区；小于0.05为阴性；</p>
                 '''
     else:
         html += '''<p>1. Sample: Sample name;</p>
                    <p>2. Clean_Reads: The number of clean FASTQ;</p>
-                   <p>3. SARS-CoV-2_Reads: The reads number of identified SARS-CoV-2;</p>
-                   <p>4. SARS-CoV-2_Reads_Pct: The proportion of SARS-CoV-2 reads: 100%*(SARS-CoV-2 reads number)/((lambda DNA reads number)+(SARS-CoV-2 reads number));</p>
-                   <p>5. ≥1X_Coverage: The coverage is calculated as proportion of reference genome covered by more than 1 folds reads;</p>
-                   <p>6. ≥100X_Coverage: The coverage is calculated as proportion of reference genome covered by more than 100 folds reads;</p>
-                   <p>7. Identification_Result: Sample identification result according to SARS-CoV-2_Reads_Pct: Positive(≥0.1%), Indetermination(0.05%-0.1%), Negative(<0.05%);</p>
+                   <p>3. GAPDH_Reads: The number of GAPDH reads;</p>
+                   <p>4. Lambda_Reads: The number of Lambda reads;</p>
+                   <p>5. SARS-CoV-2_Reads: The reads number of identified SARS-CoV-2;</p>
+                   <p>6. GAPDH_Rate: The proportion of GAPDH reads: 100%*(GAPDH reads number)/(clean reads number);</p>
+                   <p>7. Lambda_Rate: The proportion of Lambda reads: 100%*(Lambda reads number)/(clean reads number);</p>
+                   <p>8. SARS-CoV-2_Reads_Pct: The proportion of SARS-CoV-2 reads: 100%*(SARS-CoV-2 reads number)/((lambda DNA reads number)+(SARS-CoV-2 reads number));</p>
+                   <p>9. Genome_Average_Depth: Average depth of whole SARS-CoV-2 genome;</p>
+                   <p>10. ≥1X_Region_Average_Depth: Average depth of SARS-CoV-2 genome region where the depth is greater than or equal to 1X;</p>
+                   <p>11. ≥1X_Coverage: The coverage is calculated as proportion of reference genome covered by more than 1 folds reads;</p>
+                   <p>12. ≥1X_size: The length of SARS-CoV-2 genome region where the depth is greater than or equal to 1X;</p>
+                   <p>13. ≥100X_Coverage: The coverage is calculated as proportion of reference genome covered by more than 100 folds reads;</p>
+                   <p>14. ≥100X_size: The length of SARS-CoV-2 genome region where the depth is greater than or equal to 100X;</p>
+                   <p>15. Identification_Result: Sample identification result according to SARS-CoV-2_Reads_Pct: Positive(≥0.1%), Indetermination(0.05%-0.1%), Negative(<0.05%);</p>
                 '''  
     html +=     '''
                 </div>   

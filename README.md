@@ -28,6 +28,11 @@ Jun 8, 2020
 Jun 24, 2020
 1. Fixed a bug in step6, we use zcat to read .gz files now.  
 
+Jul 14, 2020
+1. Fixed a bug in Cut_Multi_Primer.py
+2. One sample corresponds to multiple barcodes, pipeline will merge the fastq files and then analysis.
+3. Add some statistical result in Identification.txt
+
 ## Requirements:
 Before running this pipeline, you need to make sure that several pieces of software and/or modules are installed on the system:  
 

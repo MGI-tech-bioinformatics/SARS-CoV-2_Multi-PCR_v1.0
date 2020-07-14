@@ -129,13 +129,42 @@ def stat_map(mapcov,outdict):
 				outdict['Coverage_100X'] = Coverage_100X
 	return
 
-def stat_sample(resultdir,sample,out_dict,lambda_dict):
+def stat_depth(depth_tsv,outdict):
+	n_total = 1
+	n_1X = 0
+	n_100X = 0
+	n_depth = 0
+	with gzip.open(depth_tsv,'rt') as fd:
+		for line in fd:
+			if '#' in line:
+				continue
+			depth = line.split()[2]
+			n_total += 1
+			if int(depth) == 0:
+				continue
+			if int(depth) >= 100:
+				n_100X += 1
+			n_1X += 1
+			n_depth += int(depth)
+	average_depth_total = '%.2f'%(n_depth/n_total)
+	average_depth_1X = '%.2f'%(n_depth/n_1X)
+	outdict['Genome_Average_Depth'] = average_depth_total
+	outdict['1X_Region_Average_Depth'] = average_depth_1X
+	outdict['1X_size'] = n_1X
+	outdict['100X_size'] = n_100X
+	return
+
+def stat_sample(resultdir,sample,out_dict,lambda_dict,GAPDH_dict):
 	file_fq_stat = resultdir + '/' + sample + '/01.Clean/Basic_Statistics_of_Sequencing_Quality.txt'
 	file_mapcov = resultdir + '/' + sample + '/03.covdep/coverage.report'
+	file_depth_tsv = resultdir + '/' + sample + '/03.covdep/depth.tsv.gz'
 	file_lambdacov = resultdir + '/' + sample + '/03.covdep/lambda_cov/coverage.report'
+	file_GAPDHcov = resultdir + '/' + sample + '/03.covdep/GAPDH_cov/coverage.report'
 	stat_fq(file_fq_stat,out_dict,fqtype)
 	stat_map(file_mapcov,out_dict)
 	stat_map(file_lambdacov,lambda_dict)
+	stat_map(file_GAPDHcov,GAPDH_dict)
+	stat_depth(file_depth_tsv,out_dict)
 	return
 
 def main():
@@ -143,13 +172,17 @@ def main():
 		for line in fs:
 			out_dict = {}
 			lambda_dict = {}
+			GAPDH_dict = {}
 			sample = line.split()[0]
 			if not os.path.exists('%s/%s/05.Stat'%(resultdir,sample)):
 				os.makedirs('%s/%s/05.Stat'%(resultdir,sample))
 			file_QC_stat = open('%s/%s/05.Stat/QC.txt'%(resultdir,sample),'w')
 			file_iden_out = open('%s/%s/05.Stat/Identification.txt'%(resultdir,sample),'w',encoding='utf-8')
-			stat_sample(resultdir,sample,out_dict,lambda_dict)
+			stat_sample(resultdir,sample,out_dict,lambda_dict,GAPDH_dict)
 			lambda_reads = lambda_dict['Target_reads']
+			GAPDH_reads = GAPDH_dict['Target_reads']
+			lambda_rate = str('%.2f'%(100*int(lambda_reads)/int(out_dict['clean_reads'])))+'%'
+			GAPDH_rate = str('%.2f'%(100*int(GAPDH_reads)/int(out_dict['clean_reads'])))+'%'
 			try:
 				PCT = str('%.2f'%(100*int(out_dict['Target_reads'])/(int(lambda_reads)+int(out_dict['Target_reads']))))+'%'
 			except:
@@ -167,8 +200,8 @@ def main():
 			#	iden = 'Negative'
 			file_QC_stat.write('Sample\tRaw_Q30\tGC_Content\tRaw_Reads\tClean_Reads\tClean_Rate\tMapping_Rate\n')
 			file_QC_stat.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\n'%(sample,out_dict['raw_Q30'],out_dict['GC_content'],out_dict['raw_reads'],out_dict['clean_reads'],out_dict['clean_rate'],out_dict['Mapping_rate']))
-			file_iden_out.write('Sample\tClean_Reads\tSARS-CoV-2_Reads_Number\tSARS-CoV-2_Reads_Pct\t≥1X_Cov\t≥100X_Cov\tIdentification_Result\n')
-			file_iden_out.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\n'%(sample,out_dict['clean_reads'],Target_reads,PCT,out_dict['Coverage_1X'],out_dict['Coverage_100X'],iden))
+			file_iden_out.write('Sample\tClean_Reads\tGAPDH_Reads\tLambda_Reads\tSARS-CoV-2_Reads\tGAPDH_Rate\tLambda_Rate\tSARS-CoV-2_Reads_Pct\tGenome_Average_Depth\t≥1X_Region_Average_Depth\t≥1X_Cov\t≥1X_size\t≥100X_Cov\t≥100X_size\tIdentification_Result\n')
+			file_iden_out.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n'%(sample,out_dict['clean_reads'],GAPDH_reads,lambda_reads,Target_reads,GAPDH_rate,lambda_rate,PCT,out_dict['Genome_Average_Depth'],out_dict['1X_Region_Average_Depth'],out_dict['Coverage_1X'],out_dict['1X_size'],out_dict['Coverage_100X'],out_dict['100X_size'],iden))
 			file_QC_stat.close()
 			file_iden_out.close()
 			df_QC = pd.read_csv('%s/%s/05.Stat/QC.txt'%(resultdir,sample), sep='\t')

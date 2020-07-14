@@ -9,8 +9,7 @@ from optparse import OptionParser
 from multiprocessing import Pool
 
 def get_primer_info(file_primer,read_len):
-	R1_set = set()
-	R2_set = set()
+	R_set = set()
 	with open(file_primer,'r') as fa:
 		for line in fa:
 			chrn, primer1, start1, end1, primer2, start2, end2 = line.split()
@@ -24,27 +23,23 @@ def get_primer_info(file_primer,read_len):
 				R1_end = end1
 				R2_start = str(int(end2) - int(read_len) + 1)
 				R2_end = start2
-			R1_set.add('%s\t%s\t%s'%(chrn,R1_start,R1_end))
-			R2_set.add('%s\t%s\t%s'%(chrn,R2_start,R2_end))
-	return R1_set, R2_set
+			R_set.add('%s\t%s\t%s\t%s\t%s'%(chrn,R1_start,R1_end,R2_start,R2_end))
+	return R_set
 
-def cut_primer(chrn,pos,seq,qua,R1_set,R2_set):
+def cut_primer(chrn,pos,reverse,seq,qua,R_set):
 	result = 'NA'
-	for i in R1_set:
-		p_chrn, p_start, p_end = i.split()[0:3]
-		if chrn == p_chrn and int(pos) - 1 <= int(p_start) <= int(pos) + 1:
+	for i in R_set:
+		p_chrn, p_start1, p_end1, p_start2, p_end2 = i.split()
+		if chrn == p_chrn and int(pos) - 10 <= int(p_start1) <= int(pos) + 10 and reverse == 'mate_reverse':
 			result = 'PASS'
-			cut_seq = seq[(int(p_end) - int(p_start) + 1):]
-			cut_qua = qua[(int(p_end) - int(p_start) + 1):]
+			cut_seq = seq[(int(p_end1) - int(p_start1) + 1):]
+			cut_qua = qua[(int(p_end1) - int(p_start1) + 1):]
 			break
-	if result == 'NA':
-		for i in R2_set:
-			p_chrn, p_start, p_end = i.split()[0:3]
-			if chrn == p_chrn and int(pos) - 1 <= int(p_start) <= int(pos) + 1:
-				result = 'PASS'
-				cut_seq = seq[0:(int(p_end) - int(p_start) + 1)]
-				cut_qua = qua[0:(int(p_end) - int(p_start) + 1)]
-				break
+		elif chrn == p_chrn and int(pos) - 10 <= int(p_start2) <= int(pos) + 10 and reverse == 'read_reverse':
+			result = 'PASS'
+			cut_seq = seq[0:(int(p_end2) - int(p_start2) + 1)]
+			cut_qua = qua[0:(int(p_end2) - int(p_start2) + 1)]
+			break
 	if result == 'NA':
 		cut_seq = seq
 		cut_qua = qua
@@ -99,7 +94,7 @@ if __name__ == '__main__':
 
 	print('[',time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),'] Started processing ')
 
-	R1_set, R2_set = get_primer_info(file_primer,read_len)
+	R_set = get_primer_info(file_primer,read_len)
 	file_inbam = pysam.AlignmentFile(inbam,'rb',check_sq=False)
 	outfq1 = '%s/%s_1.cutprimer.fq'%(outdir,sample)
 	outfq2 = '%s/%s_2.cutprimer.fq'%(outdir,sample)
@@ -120,22 +115,29 @@ if __name__ == '__main__':
 		file_out = open(outfq,'w')
 
 	for r in file_inbam:
-		#n += 1
 		readid = r.query_name
 		seq = r.seq
 		qua = r.qual
 		try:
 			chrn = r.reference_name
-			pos = r.pos
+			pos = int(r.pos) + 1
 		except:
 			continue
+
+		if r.is_reverse:
+			reverse = 'read_reverse'
+		elif r.mate_is_reverse:
+			reverse = 'mate_reverse'
+		else:
+			continue
+
 		if r.is_secondary:
 			continue
 		if chrn != 'nCoV' and n > 1:
 			continue
 		else:
 			n += 1
-		cut_seq, cut_qua, result = cut_primer(chrn,pos,seq,qua,R1_set,R2_set)
+		cut_seq, cut_qua, result = cut_primer(chrn,pos,reverse,seq,qua,R_set)
 		if result == 'NA':
 			a += 1
 			#abnormal_set.add(readid)

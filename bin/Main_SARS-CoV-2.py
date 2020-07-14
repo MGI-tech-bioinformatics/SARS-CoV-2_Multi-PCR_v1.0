@@ -7,6 +7,7 @@ import getopt
 import configparser
 import json
 from subprocess import check_call
+from collections import defaultdict
 
 def usage():
 	"""Main program of SARS-CoV-2 panel analysis pipeline.
@@ -29,12 +30,60 @@ def fqtype_error():
 	sys.exit(1)
 	return
 
-def CleanData(script,sample,barcode,fqtype,SplitData):
+def GenerateData(script,sample_dict,fqtype):
+	for key, value in sample_dict.items():
+		sample = key
+		barcode_dir = result_dir + '/' + sample
+		Clean_dir = barcode_dir + '/01.Clean'
+		create_dirs(Clean_dir)
+		if len(value) == 1:
+			for k, v in value.items():
+				barcode = k
+				raw_path = v
+				if fqtype == 'SE':
+					rawfq = 'Raw_' + sample + '.fq.gz'
+					script.write("ln -s %(raw_path)s/*%(barcode)s.fq.gz %(Clean_dir)s/%(rawfq)s\n"%{'raw_path':raw_path,'barcode':barcode,'Clean_dir':Clean_dir,'rawfq':rawfq})
+				elif fqtype == 'PE':
+					rawfq1 = 'Raw_' + sample + '_1.fq.gz'
+					rawfq2 = 'Raw_' + sample + '_2.fq.gz'
+					script.write("ln -s %(raw_path)s/*%(barcode)s_1.fq.gz %(Clean_dir)s/%(rawfq1)s\nln -s %(raw_path)s/*%(barcode)s_2.fq.gz %(Clean_dir)s/%(rawfq2)s\n"%{'raw_path':raw_path,'barcode':barcode,'Clean_dir':Clean_dir,'rawfq1':rawfq1,'rawfq2':rawfq2})
+				else:
+					fqtype_error()
+		else:
+			if fqtype == 'SE':
+				rawfq = 'Raw_' + sample + '.fq.gz'
+				cmd = 'cat '
+				for k, v in value.items():
+					barcode = k
+					raw_path = v
+					cmd += '%s/*%s.fq.gz '%(raw_path,barcode)
+				cmd += '> %s/%s\n'%(Clean_dir,rawfq)
+				script.write(cmd)
+			elif fqtype == 'PE':
+				rawfq1 = 'Raw_' + sample + '_1.fq.gz'
+				rawfq2 = 'Raw_' + sample + '_2.fq.gz'
+				cmd1 = 'cat '
+				cmd2 = 'cat '
+				for k, v in value.items():
+					barcode = k
+					raw_path = v
+					cmd1 += '%s/*%s_1.fq.gz '%(raw_path,barcode)
+					cmd2 += '%s/*%s_2.fq.gz '%(raw_path,barcode)
+				cmd1 += '> %s/%s\n'%(Clean_dir,rawfq1)
+				cmd2 += '> %s/%s\n'%(Clean_dir,rawfq2)
+				script.write(cmd1)
+				script.write(cmd2)
+			else:
+				fqtype_error()
+	return
+
+def CleanData(script,sample,fqtype,SplitData):
 	barcode_dir = result_dir + '/' + sample
 	Clean_dir = barcode_dir + '/01.Clean'
 	create_dirs(Clean_dir)
 	if fqtype == 'SE':
-		rawfq = raw_data_path + '/*' + barcode + '.fq.gz'
+		#rawfq = raw_data_path + '/*' + barcode + '.fq.gz'
+		rawfq = Clean_dir + '/Raw_' + sample + '.fq.gz'
 		#cleanfq = Clean_dir + '/Clean_' + sample + '.fq.gz'
 		cleanfq = 'Clean_' + sample + '.fq.gz'
 
@@ -52,8 +101,10 @@ def CleanData(script,sample,barcode,fqtype,SplitData):
 			script.write("%(SOAPnuke)s filter %(SOAPnuke_param)s -1 %(rawfq)s -C %(cleanfq)s -o %(Clean_dir)s \n"\
 				%{'SOAPnuke':SOAPnuke,'SOAPnuke_param':SOAPnuke_param,'rawfq':rawfq,'cleanfq':cleanfq,'Clean_dir':Clean_dir})
 	elif fqtype == 'PE':
-		rawfq1 = raw_data_path + '/*' + barcode + '_1.fq.gz'
-		rawfq2 = raw_data_path + '/*' + barcode + '_2.fq.gz'
+		#rawfq1 = raw_data_path + '/*' + barcode + '_1.fq.gz'
+		#rawfq2 = raw_data_path + '/*' + barcode + '_2.fq.gz'
+		rawfq1 = Clean_dir + '/Raw_' + sample + '_1.fq.gz'
+		rawfq2 = Clean_dir + '/Raw_' + sample + '_2.fq.gz'
 		#cleanfq1 = Clean_dir + '/Clean_' + sample + '_1.fq.gz'
 		#cleanfq2 = Clean_dir + '/Clean_' + sample + '_2.fq.gz'
 		cleanfq1 = 'Clean_' + sample + '_1.fq.gz'
@@ -102,12 +153,15 @@ def CovDep(script,barcode):
 	Align_dir = barcode_dir + '/02.Align'
 	covdep_dir = barcode_dir + '/03.covdep'
 	lambda_covdep_dir = covdep_dir + '/lambda_cov'
-	create_dirs(covdep_dir,lambda_covdep_dir)
+	GAPDH_covdep_dir = covdep_dir + '/GAPDH_cov'
+	create_dirs(covdep_dir,lambda_covdep_dir,GAPDH_covdep_dir)
 	## bamqc with all map bam
 	script.write("%(bamdst)s --cutoffdepth 1 --maxdepth 1000000 -q 1 -p %(virusbed)s -o %(covdep_dir)s %(Align_dir)s/%(barcode)s.sort.bam \n"\
 		%{'bamdst':bamdst,'virusbed':virusbed,'covdep_dir':covdep_dir,'Align_dir':Align_dir,'barcode':barcode})
 	script.write("%(bamdst)s --cutoffdepth 1 --maxdepth 1000000 -q 1 -p %(lambdabed)s -o %(covdep_dir)s/lambda_cov %(Align_dir)s/%(barcode)s.sort.bam \n"\
 		%{'bamdst':bamdst,'lambdabed':lambdabed,'covdep_dir':covdep_dir,'Align_dir':Align_dir,'barcode':barcode})
+	script.write("%(bamdst)s --cutoffdepth 1 --maxdepth 1000000 -q 1 -p %(GAPDH_bed)s -o %(covdep_dir)s/GAPDH_cov %(Align_dir)s/%(barcode)s.sort.bam \n"\
+		%{'bamdst':bamdst,'GAPDH_bed':GAPDH_bed,'covdep_dir':covdep_dir,'Align_dir':Align_dir,'barcode':barcode})
 	return
 
 def Statistics(script,fqtype):
@@ -154,7 +208,7 @@ def AlignVariant(script,fqtype,cutprimer_list,consensus_depth):
 			script.write("zcat %(Stat_dir)s/depth.regions.bed.gz|awk  '{print NR\"\\t\"log($4+1)/log(10)}' > %(Stat_dir)s/%(sample)s.draw.depth\n"%{'Stat_dir':Stat_dir,'sample':sample})
 			script.write("%(samtools)s depth -d 100000000 -a -b %(virusbed_cutprimer)s %(Stat_dir)s/%(sample)s.bam > %(Stat_dir)s/%(sample)s.depth\n"%{'samtools':samtools,'virusbed_cutprimer':virusbed_cutprimer,'sample':sample,'Stat_dir':Stat_dir})
 			script.write("export R_LIBS=%(R_lib)s:$R_LIBS && %(Rscript)s %(bin)s/line.depth.R %(Stat_dir)s/%(sample)s.draw.depth %(Stat_dir)s/Windows.Depth.svg\n"%{'Rscript':Rscript,'bin':bin,'Stat_dir':Stat_dir,'R_lib':R_lib,'sample':sample})
-			script.write("%(freebayes)s -t %(variantbed)s %(freebayes_param)s -f %(ref)s %(Stat_dir)s/%(sample)s.bam > %(Stat_dir)s/%(sample)s.raw.vcf && %(bcftools)s view --include 'FMT/GT=\"1\" && QUAL>=100 && FMT/DP>=30' %(Stat_dir)s/%(sample)s.raw.vcf > %(Stat_dir)s/%(sample)s.vcf\n%(bgzip)s -f %(Stat_dir)s/%(sample)s.vcf\n%(tabix)s %(Stat_dir)s/%(sample)s.vcf.gz\n"%{'freebayes':freebayes,'variantbed':variantbed,'Stat_dir':Stat_dir,'sample':sample,'ref':ref,'bgzip':bgzip,'tabix':tabix,'bcftools':bcftools,'freebayes_param':freebayes_param})
+			script.write("%(freebayes)s -t %(variantbed)s %(freebayes_param)s -f %(ref)s %(Stat_dir)s/%(sample)s.bam > %(Stat_dir)s/%(sample)s.raw.vcf && %(bcftools)s view --include 'FMT/GT=\"1\" && QUAL>=100' %(Stat_dir)s/%(sample)s.raw.vcf > %(Stat_dir)s/%(sample)s.vcf\n%(bgzip)s -f %(Stat_dir)s/%(sample)s.vcf\n%(tabix)s %(Stat_dir)s/%(sample)s.vcf.gz\n"%{'freebayes':freebayes,'variantbed':variantbed,'Stat_dir':Stat_dir,'sample':sample,'ref':ref,'bgzip':bgzip,'tabix':tabix,'bcftools':bcftools,'freebayes_param':freebayes_param})
 			script.write("%(bin)s/Consensus.pl %(Stat_dir)s/%(sample)s.depth %(ref)s %(consensus_depth)s %(Stat_dir)s/%(sample)s.reference1.fa %(Stat_dir)s/%(sample)s.vcf.gz\n"%{'bin':bin,'Stat_dir':Stat_dir,'sample':sample,'ref':ref,'consensus_depth':consensus_depth})
 			script.write("%(bcftools)s consensus -f %(Stat_dir)s/%(sample)s.reference1.fa -o %(Stat_dir)s/%(sample)s.Consensus.fa %(Stat_dir)s/%(sample)s.vcf.gz\n"%{'bcftools':bcftools,'Stat_dir':Stat_dir,'sample':sample})
 			script.write("sed -i \"s/MN908947.3 Wuhan seafood market pneumonia virus isolate Wuhan-Hu-1, complete genome/%(sample)s/g\" %(Stat_dir)s/%(sample)s.Consensus.fa\n"%{'Stat_dir':Stat_dir,'sample':sample})
@@ -169,8 +223,10 @@ def GetReport(script,sample):
 		%{'bin':bin,'Stat_dir':Stat_dir,'sample':sample,'python3':python3})
 	return
 
-def MainShell(script_file,step1shell,step2shell,step3shell,step4shell,step5shell,step6shell,step7shell):
+def MainShell(script_file,step0shell,step1shell,step2shell,step3shell,step4shell,step5shell,step6shell,step7shell):
 	script = open(script_file,'w')
+	script.write('''echo "start step0  at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`" && perl %(watchdog)s --mem 1G --lines 1 --maxjob 300 %(stepshell)s && echo "finish step0 at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`"\n'''\
+		%{'watchdog':watchdog,'stepshell':step0shell})
 	script.write('''echo "start step1  at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`" && perl %(watchdog)s --mem 1G --lines 1 --maxjob 300 %(stepshell)s && echo "finish step1 at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`"\n'''\
 		%{'watchdog':watchdog,'stepshell':step1shell})
 	script.write('''echo "start step2  at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`" && perl %(watchdog)s --mem 6G --lines 2 --maxjob 300 %(stepshell)s && echo "finish step2 at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`"\n'''\
@@ -188,8 +244,10 @@ def MainShell(script_file,step1shell,step2shell,step3shell,step4shell,step5shell
 	script.close()
 	return
 
-def MainShell_qsubsge(script_file,step1shell,step2shell,step3shell,step4shell,step5shell,step6shell,step7shell):
+def MainShell_qsubsge(script_file,step0shell,step1shell,step2shell,step3shell,step4shell,step5shell,step6shell,step7shell):
 	script = open(script_file,'w')
+	script.write('''echo "start step0  at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`" && perl %(qsubsge)s --queue %(queue)s --resource="vf=1G -P %(subproject)s -l num_proc=1"  --jobprefix step1 --lines 1 --reqsub --interval 5 --convert no -maxjob 500 %(stepshell)s && echo "finish step0 at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`"\n'''\
+		%{'qsubsge':qsubsge,'queue':queue,'subproject':subproject,'stepshell':step0shell})
 	script.write('''echo "start step1  at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`" && perl %(qsubsge)s --queue %(queue)s --resource="vf=1G -P %(subproject)s -l num_proc=1"  --jobprefix step1 --lines 1 --reqsub --interval 5 --convert no -maxjob 500 %(stepshell)s && echo "finish step1 at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`"\n'''\
 		%{'qsubsge':qsubsge,'queue':queue,'subproject':subproject,'stepshell':step1shell})
 	script.write('''echo "start step2  at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`" && perl %(qsubsge)s --queue %(queue)s --resource="vf=1G -P %(subproject)s -l num_proc=3"  --jobprefix step2 --lines 2 --reqsub --interval 5 --convert no -maxjob 500 %(stepshell)s && echo "finish step2 at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`"\n'''\
@@ -253,7 +311,7 @@ if __name__ == '__main__':
 	try:
 		freebayes_param = jsonobj["freebayes_param"]
 	except:
-		freebayes_param = '-p 1 -q 20 -m 60 --min-coverage 30'
+		freebayes_param = '-p 1 -q 20 -m 60 --min-coverage 20'
 	python3 = jsonobj["python3"]
 	python3_lib = jsonobj["python3_lib"]
 	Rscript = jsonobj["Rscript"]
@@ -269,31 +327,20 @@ if __name__ == '__main__':
 	mosdepth = jsonobj["mosdepth"]
 	bamdst = jsonobj["bamdst"]
 	SOAPnuke = jsonobj["SOAPnuke"]
-	#seqtk = '%s/seqtk'%(tools)
-	#bwa = '%s/bwa'%(tools)
-	#samtools = '%s/samtools'%(tools)
-	#freebayes = '%s/freebayes'%(tools)
-	#bcftools = '%s/bcftools'%(tools)
-	#bgzip = '%s/bgzip'%(tools)
-	#tabix = '%s/tabix'%(tools)
-	#bedtools = '%s/bedtools'%(tools)
-	#mosdepth = '%s/mosdepth'%(tools)
-	#bamdst = '%s/bamdst'%(tools)
-	#SOAPnuke = '%s/SOAPnuke'%(tools)
 
 	read_len = fqtype_p[2:]
 	barcode_file = jsonobj["sample_list"]
-	#snpbed = jsonobj["targetregion"]
 	virusbed = database + '/nCoV.virus.bed'
 	virusbed_cutprimer = database + '/nCoV.virus.cutprimer.bed'
 	lambdabed = database + '/nCoV.lambda.bed'
+	GAPDH_bed = database + '/nCoV.GAPDH.bed'
 	variantbed = database + '/nCoV.variant.bed'
 	bed2 = database + '/wuhanRef.bed'
 	ref = database + '/nCov.fasta'
 	try:
 		consensus_depth = jsonobj["consensus_depth"]
 	except:
-		consensus_depth = 30
+		consensus_depth = 10
 	watchdog = bin+'/localsubmit/bin/watchDog_v1.0.pl'
 	qsubsge = rootpath+'/bin/qsub-sge.pl'
 	queue = 'mgi.q'
@@ -308,6 +355,7 @@ if __name__ == '__main__':
 	shell_dir = os.path.abspath(work_dir)+"/shell"
 	create_dirs(work_dir,result_dir,shell_dir)
 
+	step0shell = open(shell_dir+ '/step0.GenerateData.sh','w')
 	step1shell = open(shell_dir+ '/step1.filter.sh','w')
 	step2shell = open(shell_dir+ '/step2.bwa.sh','w')
 	step3shell = open(shell_dir+ '/step3.bamdst.sh','w')
@@ -318,22 +366,31 @@ if __name__ == '__main__':
 
 	file_cut_primer_list = open('%s/CutPrimer.list'%(work_dir),'w')
 
+	sample_dict = defaultdict(dict)
+
 	with open(barcode_file,'r') as fb:
 		for line in fb:
 			sample, barcode, raw_data_path = line.split()
-			CleanData(step1shell,sample,barcode,fqtype,SplitData)
-			bwaaln(step2shell,sample,fqtype,read_len)
-			CovDep(step3shell,sample)
-			CutPrimer(step4shell,fqtype_p,sample)
-			GetReport(step7shell,sample)
-			if fqtype == 'PE':
-				file_cut_primer_list.write('%s\t%s/%s/04.CutPrimer/%s_1.cutprimer.fq.gz\t%s/%s/04.CutPrimer/%s_2.cutprimer.fq.gz\n'%(sample,result_dir,sample,sample,result_dir,sample,sample))
-			elif fqtype == 'SE':
-				file_cut_primer_list.write('%s\t%s/%s/04.CutPrimer/%s.cutprimer.fq.gz\n'%(sample,result_dir,sample,sample))
+			if sample not in sample_dict:
+				if fqtype == 'PE':
+					file_cut_primer_list.write('%s\t%s/%s/04.CutPrimer/%s_1.cutprimer.fq.gz\t%s/%s/04.CutPrimer/%s_2.cutprimer.fq.gz\n'%(sample,result_dir,sample,sample,result_dir,sample,sample))
+				elif fqtype == 'SE':
+					file_cut_primer_list.write('%s\t%s/%s/04.CutPrimer/%s.cutprimer.fq.gz\n'%(sample,result_dir,sample,sample))
+			sample_dict[sample][barcode] = raw_data_path
 	file_cut_primer_list.close()
+
+	for key, value in sample_dict.items():
+		sample = key
+		CleanData(step1shell,sample,fqtype,SplitData)
+		bwaaln(step2shell,sample,fqtype,read_len)
+		CovDep(step3shell,sample)
+		CutPrimer(step4shell,fqtype_p,sample)
+		GetReport(step7shell,sample)
+
+	GenerateData(step0shell,sample_dict,fqtype)
 	Statistics(step5shell,fqtype)
-	#check_call('perl %s/AlignVariant/Align.Variant.pl --list %s/CutPrimer.list --type %s --outdir %s'%(bin,work_dir,fqtype,result_dir),shell=True)
 	AlignVariant(step6shell,fqtype,'%s/CutPrimer.list'%(work_dir),consensus_depth)
+	step0shell.close()
 	step1shell.close()
 	step2shell.close()
 	step3shell.close()
@@ -344,9 +401,9 @@ if __name__ == '__main__':
 
 	finalshell = work_dir + "/main.sh"
 	if subprj == 'local':
-		MainShell(finalshell,shell_dir+ '/step1.filter.sh',shell_dir+ '/step2.bwa.sh',shell_dir+ '/step3.bamdst.sh',shell_dir+ '/step4.CutPrimer.sh',shell_dir+ '/step5.statistic.sh',shell_dir+ '/step6.AlignVariant.sh',shell_dir+ '/step7.GetReport.sh')
+		MainShell(finalshell,shell_dir+ '/step0.GenerateData.sh',shell_dir+ '/step1.filter.sh',shell_dir+ '/step2.bwa.sh',shell_dir+ '/step3.bamdst.sh',shell_dir+ '/step4.CutPrimer.sh',shell_dir+ '/step5.statistic.sh',shell_dir+ '/step6.AlignVariant.sh',shell_dir+ '/step7.GetReport.sh')
 	elif subprj == 'qsubsge':
-		MainShell_qsubsge(finalshell,shell_dir+ '/step1.filter.sh',shell_dir+ '/step2.bwa.sh',shell_dir+ '/step3.bamdst.sh',shell_dir+ '/step4.CutPrimer.sh',shell_dir+ '/step5.statistic.sh',shell_dir+ '/step6.AlignVariant.sh',shell_dir+ '/step7.GetReport.sh')
+		MainShell_qsubsge(finalshell,shell_dir+ '/step0.GenerateData.sh',shell_dir+ '/step1.filter.sh',shell_dir+ '/step2.bwa.sh',shell_dir+ '/step3.bamdst.sh',shell_dir+ '/step4.CutPrimer.sh',shell_dir+ '/step5.statistic.sh',shell_dir+ '/step6.AlignVariant.sh',shell_dir+ '/step7.GetReport.sh')
 	else:
 		print('ERROR: invalid -s param,use local/qsubsge')
 		sys.exit(1)

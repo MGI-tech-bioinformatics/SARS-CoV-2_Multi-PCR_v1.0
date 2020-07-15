@@ -207,7 +207,7 @@ def main():
 			df_QC = pd.read_csv('%s/%s/05.Stat/QC.txt'%(resultdir,sample), sep='\t')
 			df_iden = pd.read_csv('%s/%s/05.Stat/Identification.txt'%(resultdir,sample), sep='\t')
 			df_QC.to_excel('%s/%s/05.Stat/QC.xlsx'%(resultdir,sample), 'Sheet1', index=False)
-			df_QC.to_excel('%s/%s/05.Stat/Identification.xlsx'%(resultdir,sample), 'Sheet1', index=False)
+			df_iden.to_excel('%s/%s/05.Stat/Identification.xlsx'%(resultdir,sample), 'Sheet1', index=False)
 	return
 
 if __name__ == '__main__':

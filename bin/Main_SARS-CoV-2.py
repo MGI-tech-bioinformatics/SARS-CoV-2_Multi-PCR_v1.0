@@ -208,7 +208,7 @@ def AlignVariant(script,fqtype,cutprimer_list,consensus_depth):
 			script.write("zcat %(Stat_dir)s/depth.regions.bed.gz|awk  '{print NR\"\\t\"log($4+1)/log(10)}' > %(Stat_dir)s/%(sample)s.draw.depth\n"%{'Stat_dir':Stat_dir,'sample':sample})
 			script.write("%(samtools)s depth -d 100000000 -a -b %(virusbed_cutprimer)s %(Stat_dir)s/%(sample)s.bam > %(Stat_dir)s/%(sample)s.depth\n"%{'samtools':samtools,'virusbed_cutprimer':virusbed_cutprimer,'sample':sample,'Stat_dir':Stat_dir})
 			script.write("export R_LIBS=%(R_lib)s:$R_LIBS && %(Rscript)s %(bin)s/line.depth.R %(Stat_dir)s/%(sample)s.draw.depth %(Stat_dir)s/Windows.Depth.svg\n"%{'Rscript':Rscript,'bin':bin,'Stat_dir':Stat_dir,'R_lib':R_lib,'sample':sample})
-			script.write("%(freebayes)s -t %(variantbed)s %(freebayes_param)s -f %(ref)s %(Stat_dir)s/%(sample)s.bam > %(Stat_dir)s/%(sample)s.raw.vcf && %(bcftools)s view --include 'FMT/GT=\"1\" && QUAL>=100' %(Stat_dir)s/%(sample)s.raw.vcf > %(Stat_dir)s/%(sample)s.vcf\n%(bgzip)s -f %(Stat_dir)s/%(sample)s.vcf\n%(tabix)s %(Stat_dir)s/%(sample)s.vcf.gz\n"%{'freebayes':freebayes,'variantbed':variantbed,'Stat_dir':Stat_dir,'sample':sample,'ref':ref,'bgzip':bgzip,'tabix':tabix,'bcftools':bcftools,'freebayes_param':freebayes_param})
+			script.write("%(freebayes)s -t %(variantbed)s %(freebayes_param)s -f %(ref)s %(Stat_dir)s/%(sample)s.bam > %(Stat_dir)s/%(sample)s.raw.vcf && %(bcftools)s view --include 'FMT/GT=\"1\" && QUAL>=100' %(Stat_dir)s/%(sample)s.raw.vcf > %(Stat_dir)s/%(sample)s.vcf\n%(bgzip)s -f %(Stat_dir)s/%(sample)s.vcf\n%(tabix)s %(Stat_dir)s/%(sample)s.vcf.gz\n%(java)s -jar %(bin)s/snpEff/snpEff.jar MN908947.3 %(Stat_dir)s/%(sample)s.vcf.gz > %(Stat_dir)s/%(sample)s.snpEff.vcf\n%(python3)s %(bin)s/get_anno_table.py %(Stat_dir)s/%(sample)s.snpEff.vcf > %(Stat_dir)s/%(sample)s.snpEff.anno.txt\n"%{'freebayes':freebayes,'variantbed':variantbed,'Stat_dir':Stat_dir,'sample':sample,'ref':ref,'bgzip':bgzip,'tabix':tabix,'bcftools':bcftools,'freebayes_param':freebayes_param,'java':java,'bin':bin,'python3':python3})
 			script.write("%(bin)s/Consensus.pl %(Stat_dir)s/%(sample)s.depth %(ref)s %(consensus_depth)s %(Stat_dir)s/%(sample)s.reference1.fa %(Stat_dir)s/%(sample)s.vcf.gz\n"%{'bin':bin,'Stat_dir':Stat_dir,'sample':sample,'ref':ref,'consensus_depth':consensus_depth})
 			script.write("%(bcftools)s consensus -f %(Stat_dir)s/%(sample)s.reference1.fa -o %(Stat_dir)s/%(sample)s.Consensus.fa %(Stat_dir)s/%(sample)s.vcf.gz\n"%{'bcftools':bcftools,'Stat_dir':Stat_dir,'sample':sample})
 			script.write("sed -i \"s/MN908947.3 Wuhan seafood market pneumonia virus isolate Wuhan-Hu-1, complete genome/%(sample)s/g\" %(Stat_dir)s/%(sample)s.Consensus.fa\n"%{'Stat_dir':Stat_dir,'sample':sample})
@@ -237,7 +237,7 @@ def MainShell(script_file,step0shell,step1shell,step2shell,step3shell,step4shell
 		%{'watchdog':watchdog,'stepshell':step4shell})
 	script.write('''echo "start step5  at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`" && perl %(watchdog)s --mem 1G --lines 1 --maxjob 300 %(stepshell)s && echo "finish step5 at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`"\n'''\
 		%{'watchdog':watchdog,'stepshell':step5shell})
-	script.write('''echo "start step6  at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`" && perl %(watchdog)s --mem 6G --lines 14 --maxjob 300 %(stepshell)s && echo "finish step6 at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`"\n'''\
+	script.write('''echo "start step6  at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`" && perl %(watchdog)s --mem 6G --lines 16 --maxjob 300 %(stepshell)s && echo "finish step6 at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`"\n'''\
 		%{'watchdog':watchdog,'stepshell':step6shell})
 	script.write('''echo "start step7  at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`" && perl %(watchdog)s --mem 1G --lines 1 --maxjob 300 %(stepshell)s && echo "finish step7 at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`"\n'''\
 		%{'watchdog':watchdog,'stepshell':step7shell})
@@ -258,7 +258,7 @@ def MainShell_qsubsge(script_file,step0shell,step1shell,step2shell,step3shell,st
 		%{'qsubsge':qsubsge,'queue':queue,'subproject':subproject,'stepshell':step4shell})
 	script.write('''echo "start step5  at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`" && perl %(qsubsge)s --queue %(queue)s --resource="vf=1G -P %(subproject)s -l num_proc=1"  --jobprefix step5 --lines 1 --reqsub --interval 5 --convert no -maxjob 500 %(stepshell)s && echo "finish step5 at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`"\n'''\
 		%{'qsubsge':qsubsge,'queue':queue,'subproject':subproject,'stepshell':step5shell})
-	script.write('''echo "start step6  at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`" && perl %(qsubsge)s --queue %(queue)s --resource="vf=6G -P %(subproject)s -l num_proc=1"  --jobprefix step6 --lines 14 --reqsub --interval 5 --convert no -maxjob 500 %(stepshell)s && echo "finish step6 at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`"\n'''\
+	script.write('''echo "start step6  at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`" && perl %(qsubsge)s --queue %(queue)s --resource="vf=6G -P %(subproject)s -l num_proc=1"  --jobprefix step6 --lines 16 --reqsub --interval 5 --convert no -maxjob 500 %(stepshell)s && echo "finish step6 at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`"\n'''\
 		%{'qsubsge':qsubsge,'queue':queue,'subproject':subproject,'stepshell':step6shell})
 	script.write('''echo "start step7  at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`" && perl %(qsubsge)s --queue %(queue)s --resource="vf=1G -P %(subproject)s -l num_proc=1"  --jobprefix step7 --lines 1 --reqsub --interval 5 --convert no -maxjob 500 %(stepshell)s && echo "finish step7 at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`"\n'''\
 		%{'qsubsge':qsubsge,'queue':queue,'subproject':subproject,'stepshell':step7shell})
@@ -302,9 +302,9 @@ if __name__ == '__main__':
 		SOAPnuke_param = jsonobj["SOAPnuke_param"]
 	except:
 		if fqtype == 'PE':
-			SOAPnuke_param = '-l 10 -q 0.2 -n 0.05 -Q 2 -G -T 1 -f AAGTCGGAGGCCAAGCGGTCTTAGGAAGACAA  -r AAGTCGGATCGTAGCCATGTCGTTCTGTGAGCCAAGGAGTTG'
+			SOAPnuke_param = '-l 10 -q 0.2 -n 0.05 -Q 2 -G -f AAGTCGGAGGCCAAGCGGTCTTAGGAAGACAA  -r AAGTCGGATCGTAGCCATGTCGTTCTGTGAGCCAAGGAGTTG'
 		elif fqtype == 'SE':
-			SOAPnuke_param = '-l 10 -q 0.2 -n 0.05 -Q 2 -G -T 1 -f AAGTCGGAGGCCAAGCGGTCTTAGGAAGACAA'
+			SOAPnuke_param = '-l 10 -q 0.2 -n 0.05 -Q 2 -G -f AAGTCGGAGGCCAAGCGGTCTTAGGAAGACAA'
 		else:
 			print('ERROR: Invalid FqType in json file.')
 			sys.exit(1)
@@ -312,6 +312,7 @@ if __name__ == '__main__':
 		freebayes_param = jsonobj["freebayes_param"]
 	except:
 		freebayes_param = '-p 1 -q 20 -m 60 --min-coverage 20'
+	java = jsonobj["java"]
 	python3 = jsonobj["python3"]
 	python3_lib = jsonobj["python3_lib"]
 	Rscript = jsonobj["Rscript"]
@@ -343,8 +344,12 @@ if __name__ == '__main__':
 		consensus_depth = 10
 	watchdog = bin+'/localsubmit/bin/watchDog_v1.0.pl'
 	qsubsge = rootpath+'/bin/qsub-sge.pl'
-	queue = 'mgi.q'
-	subproject = 'P18Z18000N0394'
+	try:
+		queue = jsonobj["queue"]
+		subproject = jsonobj["project"]
+	except:
+		queue = 'mgi.q'
+		subproject = 'P18Z18000N0394'
 	work_dir = jsonobj["workdir"]
 	primer_list = database + '/nCoV.primer.xls'
 	try:

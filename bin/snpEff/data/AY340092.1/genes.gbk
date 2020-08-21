@@ -1,0 +1,47 @@
+LOCUS       AY340092                 368 bp    RNA     linear   VRL 25-JUL-2016
+DEFINITION  SARS coronavirus BJ2232 RNA polymerase gene, partial cds.
+ACCESSION   AY340092
+VERSION     AY340092.1
+KEYWORDS    .
+SOURCE      SARS coronavirus BJ2232
+  ORGANISM  SARS coronavirus BJ2232
+            Viruses; Riboviria; Nidovirales; Cornidovirineae; Coronaviridae;
+            Orthocoronavirinae; Betacoronavirus; Sarbecovirus.
+REFERENCE   1  (bases 1 to 368)
+  AUTHORS   Zhu,R.N., Qian,Y., Deng,J., Zhao,L.Q., Wang,F., Cao,L., Wang,T.Y.,
+            Chen,D.K. and Zhang,Q.
+  TITLE     [SARS-associated coronavirus gene fragments were detected from a
+            suspected pediatric SARS patient]
+  JOURNAL   Zhonghua Er Ke Za Zhi 41 (9), 641-644 (2003)
+   PUBMED   14733796
+REFERENCE   2  (bases 1 to 368)
+  AUTHORS   Qian,Y., Zhu,R., Zhao,L., Deng,J., Wang,F., Chen,H., Zhang,Q.,
+            Ang,T. and Cao,L.
+  TITLE     Direct Submission
+  JOURNAL   Submitted (08-JUL-2003) Department of Virology, Capital Institute
+            of Paediatrics, 2 Yabao Road, Beijing, Beijing 100020, People's
+            Republic of China
+FEATURES             Location/Qualifiers
+     source          1..368
+                     /organism="SARS coronavirus BJ2232"
+                     /mol_type="genomic RNA"
+                     /isolate="BJ2232"
+                     /db_xref="taxon:241183"
+     CDS             <1..>368
+                     /note="nonstructural polyprotein"
+                     /codon_start=3
+                     /product="RNA polymerase"
+                     /protein_id="AAQ18568.1"
+                     /translation="NMLRIMASLVLARKHNTCCNLSHRFYRLANECAQVLSEMVMCGG
+                     SLYVKPGGTSSGDATTAYANSVFNICQAVTANVNALLSTDGNKIADKYVRNLQHRLYE
+                     CLYRNRDVDHEFVDEFYAYL"
+ORIGIN      
+        1 ctaacatgct taggataatg gcctctcttg ttcttgctcg caaacataac acttgctgta
+       61 acttatcaca ccgtttctac aggttagcta acgagtgtgc gcaagtatta agtgagatgg
+      121 tcatgtgtgg cggctcacta tatgttaaac caggtggaac atcatccggt gatgctacaa
+      181 ctgcttatgc taatagtgtc tttaacattt gtcaagctgt tacagccaat gtaaatgcac
+      241 ttctttcaac tgatggtaat aagatagctg acaagtatgt ccgcaatcta caacacaggc
+      301 tctatgagtg tctctataga aatagggatg ttgatcatga attcgtggat gagttttacg
+      361 cttacctg
+//
+

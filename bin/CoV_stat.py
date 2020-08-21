@@ -131,7 +131,7 @@ def stat_map(mapcov,outdict):
 
 def stat_depth(depth_tsv,outdict):
 	n_total = 1
-	n_1X = 0
+	n_1X = 1
 	n_100X = 0
 	n_depth = 0
 	with gzip.open(depth_tsv,'rt') as fd:
@@ -181,8 +181,14 @@ def main():
 			stat_sample(resultdir,sample,out_dict,lambda_dict,GAPDH_dict)
 			lambda_reads = lambda_dict['Target_reads']
 			GAPDH_reads = GAPDH_dict['Target_reads']
-			lambda_rate = str('%.2f'%(100*int(lambda_reads)/int(out_dict['clean_reads'])))+'%'
-			GAPDH_rate = str('%.2f'%(100*int(GAPDH_reads)/int(out_dict['clean_reads'])))+'%'
+			try:
+				lambda_rate = str('%.2f'%(100*int(lambda_reads)/int(out_dict['clean_reads'])))+'%'
+			except:
+				lambda_rate = '0%'
+			try:
+				GAPDH_rate = str('%.2f'%(100*int(GAPDH_reads)/int(out_dict['clean_reads'])))+'%'
+			except:
+				GAPDH_rate = '0%'
 			try:
 				PCT = str('%.2f'%(100*int(out_dict['Target_reads'])/(int(lambda_reads)+int(out_dict['Target_reads']))))+'%'
 			except:

@@ -30,8 +30,11 @@ Jun 24, 2020
 
 Jul 14, 2020
 1. Fixed a bug in Cut_Multi_Primer.py
-2. One sample corresponds to multiple barcodes, pipeline will merge the fastq files and then analysis.
+2. One sample corresponds to multiple barcodes, pipeline will merge the fastq files.  
 3. Add some statistical result in Identification.txt
+
+Aug 21, 2020
+1. Apply variant annotation by snpEff  
 
 ## Requirements:
 Before running this pipeline, you need to make sure that several pieces of software and/or modules are installed on the system:  

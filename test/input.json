@@ -6,6 +6,7 @@
   "SOAPnuke_param": "-l 10 -q 0.2 -n 0.05 -Q 2 -G -T 1 -f AAGTCGGAGGCCAAGCGGTCTTAGGAAGACAA  -r AAGTCGGATCGTAGCCATGTCGTTCTGTGAGCCAAGGAGTTG",
   "freebayes_param": "-p 1 -q 20 -m 60 --min-coverage 30",
   "consensus_depth": 30,
+  "java": "path/to/java",
   "python3": "path/to/python3",
   "python3_lib": "path/to/PYTHONPATH",
   "Rscript": "path/to/Rscript",

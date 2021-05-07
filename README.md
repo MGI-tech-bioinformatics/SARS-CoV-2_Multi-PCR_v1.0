@@ -39,7 +39,14 @@ Aug 21, 2020
 Feb 24, 2021
 1. Use bwa-mem instead of bwa-aln in alignment 
 2. Update SARS-CoV-2 positive criteria: SARS-CoV-2 reads pct >= 0.1% AND (>= 1X Coverage ) >= 1% 
-3. Update Freebayes version: v1.3.4 
+3. Update Freebayes version: v1.3.4
+
+May 7, 2021
+1. Use variant annotation excel instead of VCF file in HTML report
+2. Optimized depth distribution SVG in HTML report.
+3. Mark the primer base quality as 0 instead of removing primer sequence
+4. Reduce software running time
+5. Upload a docker version of this software
 
 ## Requirements:
 Before running this pipeline, you need to make sure that several pieces of software and/or modules are installed on the system:  

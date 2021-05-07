@@ -144,7 +144,7 @@ Notes
 1. All requirements and software are install in docker image, there is no need to configure the software path in json file.  
 
 	Json Demo: 
-
+```json
     {
       "FqType": "PE", 
       "sample_list": "/data/MGI-SARS-CoV-2_V1.2/sample.list", 
@@ -153,5 +153,5 @@ Notes
       "freebayes_param": "-H -p 1 -q 20 -m 60 --min-coverage 20 -F 0.6", 
       "consensus_depth": "10" 
     }
-
+```
 2. $workdir is defined in json with "workdir", $datadir is defined in sample.list

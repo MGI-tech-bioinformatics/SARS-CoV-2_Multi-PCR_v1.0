@@ -45,8 +45,9 @@ May 7, 2021
 1. Use variant annotation excel instead of VCF file in HTML report
 2. Optimized depth distribution SVG in HTML report.
 3. Mark the primer base quality as 0 instead of removing primer sequence
-4. Reduce software running time
-5. Upload a docker version of this software
+4. Update primer sequence information
+5. Reduce software running time
+6. Upload a docker version of this software
 
 ## Requirements:
 Before running this pipeline, you need to make sure that several pieces of software and/or modules are installed on the system:  

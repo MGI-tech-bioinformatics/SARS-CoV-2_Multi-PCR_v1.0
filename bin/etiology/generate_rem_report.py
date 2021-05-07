@@ -27,7 +27,7 @@ filterQCList= ["Reads_with_N", "Reads_with_N_Rate", "Reads_with_LowQuality", "Re
 def getFieldNameByLang(fieldName, lang="cn"):
     if lang == "cn":
         fieldDict = {
-            "Multi-PCR SARS-CoV-2 Analysis Report": "多重PCR新冠病毒分析报告",
+            "MGI-SARS-CoV-2 Analysis Report": "多重PCR新冠病毒分析报告",
             "English": "中文",
             "Basic summary": "基本信息",
             "QC result": "质控结果",
@@ -50,7 +50,7 @@ def getFieldNameByLang(fieldName, lang="cn"):
             "Identification_Result":"阴阳性",
             "Picture":"图片链接",
             "Consensus Sequence":"一致性序列",
-            "VCF":"VCF文件",
+            "Variant":"Variant文件",
 			"Download":"下载",
 			"Positive":"阳性",
 			"Negative":"阴性",
@@ -107,7 +107,7 @@ def generate_html_report(path, name='rem', output_path='E:/codezlims/rem/Result/
             <html>
             <head>
                 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-                <title>'''+ getFieldNameByLang("Multi-PCR SARS-CoV-2 Analysis Report", lang) + '''</title>
+                <title>'''+ getFieldNameByLang("MGI-SARS-CoV-2 Analysis Report", lang) + '''</title>
                 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
                 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
                 <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
@@ -118,15 +118,15 @@ def generate_html_report(path, name='rem', output_path='E:/codezlims/rem/Result/
             ''' + html_util.HtmlUtil.getFileContent('table.css') + '''
                 </style>
             </head>
-            <body>
+            <body style="background-color:#ffffff;">
             <!--header starts-->
             <div class="header">
                 <div class="repeater"></div>
                 <div class="wrapper">
                     <div class="headerBox clearfloat">
                         <div class="headLeft fl">
-                        <h1>'''+ getFieldNameByLang("Multi-PCR SARS-CoV-2 Analysis Report", lang) + '''</h1>
-                        <div style="float:right; margin:-40px -130px 10px 160px; background-color: #f7faeb; width: 100px; height: 30px; border-radius: 8px;text-align:center;"><a href="./'''+ name 
+                        <h1>'''+ getFieldNameByLang("MGI-SARS-CoV-2 Analysis Report", lang) + '''</h1>
+                        <div style="float:right; margin:-40px -130px 10px 160px; background-color: #ffffff; width: 100px; height: 30px; border-radius: 8px;text-align:center;"><a href="./'''+ name 
                         
     if lang == "cn":
         html+= "_en"
@@ -138,12 +138,17 @@ def generate_html_report(path, name='rem', output_path='E:/codezlims/rem/Result/
     else:
         html+= "中文"
     html+=          '''</a></div>
-                        <h2>V1.0.0.0</h2>
+                        <h2>V1.2</h2>
                         </div>
                         <!-- headLeft -->
                         <div class="headRight fr">
-                        <div class="logo">
-                        <img src="''' + html_util.HtmlUtil.getPNGBinary('logo.png') + '''">
+                        <div class="logo" style="margin: 24px;">
+                        <img src="'''
+    if lang == "cn":
+        html += html_util.HtmlUtil.getPNGBinary('logo.cn.png')
+    else:
+        html += html_util.HtmlUtil.getPNGBinary('logo.en.png')
+    html += '''">
                         </div>
                         </div>
                     <!-- headRight -->
@@ -263,36 +268,20 @@ def generate_html_report(path, name='rem', output_path='E:/codezlims/rem/Result/
     if lang == "cn":                
         html += '''<p>1. 样本：样品名；</p>
                    <p>2. Clean_Reads：clean reads数；</p>
-                   <p>3. GAPDH_Reads：GAPDH reads数：</p>
-                   <p>4. Lambda_Reads：Lambda reads数：</p>
-                   <p>5. SARS-CoV-2_Reads：鉴定出的新冠病毒read数；</p>
-                   <p>6. GAPDH_Rate：GAPDH reads比例：</p>
-                   <p>7. Lambda_Rate：Lambda reads比例：</p>
-                   <p>8. SARS-CoV-2_Reads_Pct：鉴定出的新冠病毒比例，等于100%*(SARS-CoV-2 reads number)/((lambda DNA reads number)+(SARS-CoV-2 reads number))；</p>
-                   <p>9. Genome_Average_Depth：新冠病毒全长基因组的平均深度；</p>
-                   <p>10. ≥1X_Region_Average_Depth：新冠病毒基因组≥1X区域的平均深度；</p>
-                   <p>11. ≥1X_Coverage：鉴定出的新冠病毒reads与reference的比对后统计≥1X的覆盖度；</p>
-                   <p>12. ≥1X_size：新冠病毒≥1X的区域长度；</p>
-                   <p>13. ≥100X_Coverage：鉴定出的新冠病毒reads与reference的比对后统计≥100X的覆盖度；</p>
-                   <p>14. ≥100X_size：新冠病毒≥100X的区域长度；</p>
-                   <p>15. Identification_Result：SARS-CoV-2_Reads_Pct大于或等于0.1%，为阳性；0.05%-0.1%为灰区；小于0.05为阴性；</p>
+                   <p>3. SARS-CoV-2_Reads：鉴定出的新冠病毒read数；</p>
+                   <p>4. SARS-CoV-2_Reads_Pct：鉴定出的新冠病毒比例，等于100%*(SARS-CoV-2 reads number)/((lambda DNA reads number)+(SARS-CoV-2 reads number))；</p>
+                   <p>5. ≥1X_Coverage：鉴定出的新冠病毒reads与reference的比对后统计≥1X的覆盖度；</p>
+                   <p>6. ≥100X_Coverage：鉴定出的新冠病毒reads与reference的比对后统计≥100X的覆盖度；</p>
+                   <p>7. Identification_Result：SARS-CoV-2_Reads_Pct大于或等于0.1%，为阳性；0.05%-0.1%为灰区；小于0.05为阴性；</p>
                 '''
     else:
         html += '''<p>1. Sample: Sample name;</p>
                    <p>2. Clean_Reads: The number of clean FASTQ;</p>
-                   <p>3. GAPDH_Reads: The number of GAPDH reads;</p>
-                   <p>4. Lambda_Reads: The number of Lambda reads;</p>
-                   <p>5. SARS-CoV-2_Reads: The reads number of identified SARS-CoV-2;</p>
-                   <p>6. GAPDH_Rate: The proportion of GAPDH reads: 100%*(GAPDH reads number)/(clean reads number);</p>
-                   <p>7. Lambda_Rate: The proportion of Lambda reads: 100%*(Lambda reads number)/(clean reads number);</p>
-                   <p>8. SARS-CoV-2_Reads_Pct: The proportion of SARS-CoV-2 reads: 100%*(SARS-CoV-2 reads number)/((lambda DNA reads number)+(SARS-CoV-2 reads number));</p>
-                   <p>9. Genome_Average_Depth: Average depth of whole SARS-CoV-2 genome;</p>
-                   <p>10. ≥1X_Region_Average_Depth: Average depth of SARS-CoV-2 genome region where the depth is greater than or equal to 1X;</p>
-                   <p>11. ≥1X_Coverage: The coverage is calculated as proportion of reference genome covered by more than 1 folds reads;</p>
-                   <p>12. ≥1X_size: The length of SARS-CoV-2 genome region where the depth is greater than or equal to 1X;</p>
-                   <p>13. ≥100X_Coverage: The coverage is calculated as proportion of reference genome covered by more than 100 folds reads;</p>
-                   <p>14. ≥100X_size: The length of SARS-CoV-2 genome region where the depth is greater than or equal to 100X;</p>
-                   <p>15. Identification_Result: Sample identification result according to SARS-CoV-2_Reads_Pct: Positive(≥0.1%), Indetermination(0.05%-0.1%), Negative(<0.05%);</p>
+                   <p>3. SARS-CoV-2_Reads: The reads number of identified SARS-CoV-2;</p>
+                   <p>4. SARS-CoV-2_Reads_Pct: The proportion of SARS-CoV-2 reads: 100%*(SARS-CoV-2 reads number)/((lambda DNA reads number)+(SARS-CoV-2 reads number));</p>
+                   <p>5. ≥1X_Coverage: The coverage is calculated as proportion of reference genome covered by more than 1 folds reads;</p>
+                   <p>6. ≥100X_Coverage: The coverage is calculated as proportion of reference genome covered by more than 100 folds reads;</p>
+                   <p>7. Identification_Result: Sample identification result according to SARS-CoV-2_Reads_Pct: Positive(≥0.1%), Indetermination(0.05%-0.1%), Negative(<0.05%);</p>
                 '''  
     html +=     '''
                 </div>   
@@ -342,10 +331,10 @@ def generate_html_report(path, name='rem', output_path='E:/codezlims/rem/Result/
                    </p>
                </div>
                <div class="secBox" style="border: none">
-                   <h1>''' + getFieldNameByLang("VCF", lang) + '''</h1>
+                   <h1>''' + getFieldNameByLang("Variant", lang) + '''</h1>
                </div>
                <div class="dataLink">
-                   <a href="./''' + name + '''.vcf.gz" download>'''+ getFieldNameByLang("Download", lang) + '''</a>
+                   <a href="./''' + name + '''.snpEff.anno.xlsx" download>'''+ getFieldNameByLang("Download", lang) + '''</a>
                </div>
                <div class="content">
                    <p>

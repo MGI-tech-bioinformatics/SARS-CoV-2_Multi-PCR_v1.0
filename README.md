@@ -36,6 +36,11 @@ Jul 14, 2020
 Aug 21, 2020
 1. Apply variant annotation by snpEff  
 
+Feb 24, 2021
+1. Use bwa-mem instead of bwa-aln in alignment 
+2. Update SARS-CoV-2 positive criteria: SARS-CoV-2 reads pct >= 0.1% AND (>= 1X Coverage ) >= 1% 
+3. Update Freebayes version: v1.3.4 
+
 ## Requirements:
 Before running this pipeline, you need to make sure that several pieces of software and/or modules are installed on the system:  
 
@@ -120,3 +125,31 @@ path/to/workdir/result/*/05.Stat/*.vcf.anno
 ```
 path/to/workdir/result/*/05.Stat/*.html
 ```
+## With Docker
+
+To pull a docker repository:
+
+    docker pull meizhiying/mgi-sars-cov-2:v1.3
+
+Running
+	docker run -d \
+	--name $WORKNAME \
+	-v $workdir:$workdir \
+	-v $datadir:$datadir \
+	meizhiying/mgi-sars-cov-2:v1.2 \
+	/SARS-CoV-2_pipeline/bin/python3/bin/python3 /SARS-CoV-2_pipeline/bin/Main_SARS-CoV-2.mgi_use.py -i $json
+
+Notes
+1. All requirements and software are install in docker image, there is no need to configure the software path in json file.
+	Json Demo:
+
+    {
+      "FqType": "PE",
+      "sample_list": "/data/MGI-SARS-CoV-2_V1.2/sample.list",
+      "workdir": "/data/MGI-SARS-CoV-2_V1.2/analysis",
+      "SplitData": "1M",
+      "freebayes_param": "-H -p 1 -q 20 -m 60 --min-coverage 20 -F 0.6",
+      "consensus_depth": "10"
+    }
+
+2. $workdir is defined in json with "workdir", $datadir is defined in sample.list

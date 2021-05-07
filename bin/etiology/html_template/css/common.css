@@ -35,8 +35,8 @@
     padding: 75px 0;
 }
 .header .headLeft h1 {
-    font-size: 1.8rem;
-    color: #f7faeb;
+    font-size: 1.5rem;
+    color: #ffffff;
 }
 
 .header .headLeft h2 {
@@ -49,6 +49,8 @@
     border-left: 1px solid #317f8f;
     padding-left: 80px;
     margin-top: 6px;
+    height: 110px;
+    margin: auto;
 }
 .header .headRight .logo {
     width: 160px;

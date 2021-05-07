@@ -196,7 +196,7 @@ def main():
 			Target_reads = out_dict['Target_reads']
 			Coverage_1X = float(out_dict['Coverage_1X'].strip('%'))
 			iden_number = float(PCT.strip('%'))
-			if iden_number >= 0.1:
+			if iden_number >= 0.1 and Coverage_1X >= 1:
 				iden = 'Positive'
 			elif iden_number < 0.05:
 				iden = 'Negative'

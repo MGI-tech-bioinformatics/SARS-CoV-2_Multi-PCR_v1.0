@@ -1,6 +1,15 @@
-Args <- commandArgs(T)
 library(Cairo)
-data = read.table(Args[1],header=F,check.names=F,quote="",sep="\t")
-CairoSVG(file=Args[2])
-plot(data$V1, data$V2, type = "l",lwd = 2,ylab = "log10(Depth)", xlab = "Windows", main = "", col = 'royalblue3', xlim=c(min(data$V1),max(data$V1)), ylim=c(min(data$V2), max(data$V2)))
+
+argv <- commandArgs(TRUE)
+
+infile <- argv[1]
+outfile <- argv[2]
+
+CairoSVG(width = 11.5, height = 5,file=outfile)
+dat <- read.table(infile,header = F)
+sp1=spline(dat$V1,dat$V2,n=9000)
+plot(dat$V1,dat$V2,type='l',ylim=c(0,max(dat$V2)),xlab="Windows", ylab="Log10(Depth)",col='white',lwd=1)
+lines(sp1,col='blue',lwd=1.5) 
+#lines(sp1,col='red2',lwd=1.5)
+
 dev.off()

@@ -140,8 +140,9 @@ Running
 	/SARS-CoV-2_pipeline/bin/python3/bin/python3 /SARS-CoV-2_pipeline/bin/Main_SARS-CoV-2.mgi_use.py -i $json
 
 Notes
-1. All requirements and software are install in docker image, there is no need to configure the software path in json file.
-	Json Demo:
+1. All requirements and software are install in docker image, there is no need to configure the software path in json file. 
+
+	Json Demo: 
 
     {
       "FqType": "PE", 

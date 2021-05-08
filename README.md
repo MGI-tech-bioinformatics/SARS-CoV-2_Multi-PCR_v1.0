@@ -145,7 +145,7 @@ Running
 	--name $WORKNAME \
 	-v $workdir:$workdir \
 	-v $datadir:$datadir \
-	meizhiying/mgi-sars-cov-2:v1.2 \
+	meizhiying/mgi-sars-cov-2:v1.3 \
 	/SARS-CoV-2_pipeline/bin/python3/bin/python3 /SARS-CoV-2_pipeline/bin/Main_SARS-CoV-2.mgi_use.py -i $json
 
 Notes
@@ -155,8 +155,8 @@ Notes
 ```json
     {
       "FqType": "PE", 
-      "sample_list": "/data/MGI-SARS-CoV-2_V1.2/sample.list", 
-      "workdir": "/data/MGI-SARS-CoV-2_V1.2/analysis", 
+      "sample_list": "/data/MGI-SARS-CoV-2_V1.3/sample.list", 
+      "workdir": "/data/MGI-SARS-CoV-2_V1.3/analysis", 
       "SplitData": "1M", 
       "freebayes_param": "-H -p 1 -q 20 -m 60 --min-coverage 20 -F 0.6", 
       "consensus_depth": "10" 

@@ -90,7 +90,12 @@ To install the required software:
     cd SARS-CoV-2_Multi-PCR_v1.0; sh install.sh
 
 
-Notes: The install.sh will install the required software to SARS-CoV-2_Multi-PCR_v1.0/tools, if the software are not working,the above dependent software needs to be installed separately according to their instructions. The Perl,Python,R and their library need to be installed by users. After installing, users should edit the input.json file, and change the software path to your own path.
+Notes: 
+* The install.sh will install the required software to SARS-CoV-2_Multi-PCR_v1.0/tools, if the software are not working,the above dependent software needs to be installed separately according to their instructions. The Perl,Python,R and their library need to be installed by users. After installing, users should edit the input.json file and change the software path to your own path. 
+* This software is adapted to the MGI product *ATOPlex RNA Library Prep Set* which includes different versions depending on the primers, Current versions are as follows:
+  ATOPlex RNA Library Prep. Set 1000027431, V2.0
+  ATOPlex RNA Library Prep. Set 1000023556, V1.1
+* According to the different versions of the kit, you need to specify the corresponding version information in the json file through the *primer_version* field.[1.1/2.0]
 
 
 ## Usage
@@ -101,12 +106,13 @@ The details for input.json file are as follows:
 * workdir, analysis result directory.  
 * SplitData, downsampling size of each sample(1G/1M/1K). 
 * SOAPnuke_param, param of SOAPnuke.
-* freebayes_param, param of freebayes.In particular,the parameter '-p 1' is necessary. 
-* consensus_depth, threshold of point depth for consensus sequence.[1~30.Default:30] 
+* freebayes_param, param of freebayes.In particular,the parameter '-H -p 1' is necessary. 
+* consensus_depth, threshold of point depth for consensus sequence.[1~20.Default:10] 
 * python3, path to python3. 
 * python3_lib, path to python3 library. 
 * Rscript, path to Rscript. 
 * R_lib, path to R library. 
+* primer_version, version informations of data.[1.1/2.0.Default:2.0]
 * tools(bwa,samtools....), path to this tool. 
 
 ### 2.Run the pipeline.

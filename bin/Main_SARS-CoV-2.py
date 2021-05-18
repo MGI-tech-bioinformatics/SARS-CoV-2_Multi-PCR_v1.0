@@ -364,7 +364,12 @@ if __name__ == '__main__':
 		queue = 'mgi.q'
 		subproject = 'P18Z18000N0394'
 	work_dir = jsonobj["workdir"]
-	primer_list = database + '/nCoV.primer.xls'
+	try:
+		primer_version = jsonobj["primer_version"]
+	except:
+		primer_version = '2.0'
+	#primer_list = database + '/nCoV.primer.xls'
+	primer_list = '%s/nCoV.primer.%s.xls'%(database,primer_version)
 	try:
 		SplitData = jsonobj["SplitData"]
 	except:

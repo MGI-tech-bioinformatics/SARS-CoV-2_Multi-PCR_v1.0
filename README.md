@@ -165,7 +165,8 @@ Notes
       "workdir": "/data/MGI-SARS-CoV-2_V1.2/analysis", 
       "SplitData": "1M", 
       "freebayes_param": "-H -p 1 -q 20 -m 60 --min-coverage 20 -F 0.6", 
-      "consensus_depth": "10" 
+      "consensus_depth": "10", 
+      "primer_version": "2.0" 
     }
 ```
 2. $workdir is defined in json with "workdir", $datadir is defined in sample.list

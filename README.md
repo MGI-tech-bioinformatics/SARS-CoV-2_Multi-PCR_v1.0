@@ -146,7 +146,7 @@ path/to/workdir/result/*/05.Stat/*.html
 
 To pull a docker repository:  
 
-    docker pull meizhiying/mgi-sars-cov-2:v1.2
+    docker pull meizhiying/mgi-sars-cov-2:Eu
 
 Running  
 
@@ -154,7 +154,7 @@ Running
 	--name $WORKNAME \
 	-v $workdir:$workdir \
 	-v $datadir:$datadir \
-	meizhiying/mgi-sars-cov-2:v1.2 \
+	meizhiying/mgi-sars-cov-2:Eu \
 	/SARS-CoV-2_pipeline/bin/python3/bin/python3 /SARS-CoV-2_pipeline/bin/Main_SARS-CoV-2.mgi_use.py -i $json
 
 Notes

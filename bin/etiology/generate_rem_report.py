@@ -110,7 +110,6 @@ def generate_html_report(path, name='rem', output_path='E:/codezlims/rem/Result/
                 <title>'''+ getFieldNameByLang("MGI-SARS-CoV-2 Analysis Report", lang) + '''</title>
                 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
                 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
-                <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
                 <!-- load css file -->
                 <style type="text/css">
             ''' + html_util.HtmlUtil.getFileContent('base.css') + '''

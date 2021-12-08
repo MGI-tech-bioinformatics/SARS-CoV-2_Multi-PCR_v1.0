@@ -55,7 +55,7 @@ def usage():
 	"""
 Primer adapter processing program.
 ----------------------------------
-Version: 1.1.0
+Version: 1.2
 
 Usage:
 	Cut_Multi_Primer.py -p <STR> -b <STR> -s <STR> -o <STR>

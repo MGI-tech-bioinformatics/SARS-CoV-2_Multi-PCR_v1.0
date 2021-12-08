@@ -55,7 +55,19 @@ with open(file_in,'r') as fa:
 			vcf_dict[tag_list[n]] = form_list[n]
 		RO = vcf_dict['RO']
 		AO = vcf_dict['AO']
-		Freq = str('%.2f'%(100*int(AO)/(int(RO)+int(AO))))+'%'
+		if ',' in AO:
+			Freq = ''
+			Total_AO = 0
+			for i in AO.split(','):
+				Total_AO += int(i)
+			for i in AO.split(','):
+				freq_i = str('%.2f'%(100*int(i)/(int(RO)+Total_AO)))+'%'
+				if not Freq:
+					Freq = freq_i
+				else:
+					Freq += ','+freq_i
+		else:
+			Freq = str('%.2f'%(100*int(AO)/(int(RO)+int(AO))))+'%'
 		anno_out += '\t%s\t%s\t%s\n'%(RO,AO,Freq)
 		#print(anno_out)
 		if iden == 'Positive':

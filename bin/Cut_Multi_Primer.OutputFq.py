@@ -8,7 +8,7 @@ from subprocess import check_call
 from optparse import OptionParser
 from multiprocessing import Pool
 
-def get_primer_info(file_primer,read_len):
+def get_primer_info(file_primer):
 	R_set = set()
 	with open(file_primer,'r') as fa:
 		for line in fa:
@@ -16,13 +16,11 @@ def get_primer_info(file_primer,read_len):
 			if int(start1) > int(start2):
 				R1_start = start2
 				R1_end = end2
-				#R2_start = str(int(end1) - int(read_len) + 1)
 				R2_start = start1
 				R2_end = end1
 			elif int(start1) < int(start2):
 				R1_start = start1
 				R1_end = end1
-				#R2_start = str(int(end2) - int(read_len) + 1)
 				R2_start = start2
 				R2_end = end2
 			R_set.add('%s\t%s\t%s\t%s\t%s'%(chrn,R1_start,R1_end,R2_start,R2_end))
@@ -62,7 +60,7 @@ def usage():
 	"""
 Primer adapter processing program.
 ----------------------------------
-Version: 1.1.0
+Version: 1.2
 
 Usage:
 	Cut_Multi_Primer.py -p <STR> -b <STR> -s <STR> -o <STR>
@@ -96,11 +94,10 @@ if __name__ == '__main__':
 	outdir = optlist.opt_o
 	FqType_p = optlist.opt_t
 	FqType = FqType_p[0:2]
-	read_len = FqType_p[2:]
 
 	print('[',time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),'] Started processing ')
 
-	R_set = get_primer_info(file_primer,read_len)
+	R_set = get_primer_info(file_primer)
 	file_inbam = pysam.AlignmentFile(inbam,'rb',check_sq=False)
 	outfq1 = '%s/%s_1.cutprimer.fq'%(outdir,sample)
 	outfq2 = '%s/%s_2.cutprimer.fq'%(outdir,sample)
@@ -144,7 +141,7 @@ if __name__ == '__main__':
 
 		if r.is_secondary:
 			continue
-		if chrn != 'nCoV' and n > 1:
+		if chrn != 'MN908947.3' and n > 1:
 			continue
 		else:
 			n += 1

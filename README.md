@@ -49,6 +49,9 @@ May 7, 2021
 5. Reduce software running time
 6. Upload a docker version of this software
 
+Dec 8, 2021
+1. Fixed a bug in indel calling, we will merge overlaped PE reads to make the indel detection more accurate.
+
 ## Requirements:
 Before running this pipeline, you need to make sure that several pieces of software and/or modules are installed on the system:  
 

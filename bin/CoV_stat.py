@@ -55,52 +55,52 @@ def stat_fq(fqstat,outdict,fqtype):
 					outdict['clean_reads'] = clean_reads
 			if 'Total number of bases' in line:
 				total_bases = int(info[4])*2
-			if 'Number of base C (%)' in line:
+			if 'Number of base C' in line:
 				if fqtype == 'PE':
-					C1 = info[5]
-					C2 = line.split('(')[3].split(')')[1].strip()
+					C1 = info[4]
+					C2 = info[8]
 					C_number = int(C1) + int(C2)
 				elif fqtype == 'SE':
-					C_number = int(info[5])
-			if 'Number of base G (%)' in line:
+					C_number = int(info[4])
+			if 'Number of base G' in line:
 				if fqtype == 'PE':
-					G1 = info[5]
-					G2 = line.split('(')[3].split(')')[1].strip()
+					G1 = info[4]
+					G2 = info[8]
 					G_number = int(C1) + int(C2)
 				elif fqtype == 'SE':
-					G_number = int(info[5])
+					G_number = int(info[4])
 			if 'Number of filtered reads' in line:
 				filter_rate = line.split('(')[2].split(')')[0].strip()
 				outdict['filter_rate'] = filter_rate
 				outdict['clean_rate'] = str('%.2f'%(100 - float(filter_rate.strip('%'))))+'%'
-			if 'Number of base calls with quality value of 20 or higher (Q20+)' in line:
+			if 'Q20 number' in line:
 				if fqtype == 'PE':
-					raw_Q20_fq1 = line.split('(')[3].split(')')[0].strip('%')
-					clean_Q20_fq1 = line.split('(')[4].split(')')[0].strip('%')
-					raw_Q20_fq2 = line.split('(')[5].split(')')[0].strip('%')
-					clean_Q20_fq2 = line.split('(')[6].split(')')[0].strip('%')
+					raw_Q20_fq1 = line.split('(')[1].split(')')[0].strip('%')
+					clean_Q20_fq1 = line.split('(')[2].split(')')[0].strip('%')
+					raw_Q20_fq2 = line.split('(')[3].split(')')[0].strip('%')
+					clean_Q20_fq2 = line.split('(')[4].split(')')[0].strip('%')
 					raw_Q20 = '%.2f'%((float(raw_Q20_fq1) + float(raw_Q20_fq2))/2)
 					clean_Q20 = '%.2f'%((float(clean_Q20_fq1) + float(clean_Q20_fq2))/2)
 					outdict['raw_Q20'] = raw_Q20 + '%'
 					outdict['clean_Q20'] = clean_Q20 + '%'
 				elif fqtype == 'SE':
-					raw_Q20 = line.split('(')[3].split(')')[0].strip('%')
-					clean_Q20 = line.split('(')[4].split(')')[0].strip('%')
+					raw_Q20 = line.split('(')[1].split(')')[0].strip('%')
+					clean_Q20 = line.split('(')[2].split(')')[0].strip('%')
 					outdict['raw_Q20'] = raw_Q20
 					outdict['clean_Q20'] = clean_Q20
-			if 'Number of base calls with quality value of 30 or higher (Q30+)' in line:
+			if 'Q30 number' in line:
 				if fqtype == 'PE':
-					raw_Q30_fq1 = line.split('(')[3].split(')')[0].strip('%')
-					clean_Q30_fq1 = line.split('(')[4].split(')')[0].strip('%')
-					raw_Q30_fq2 = line.split('(')[5].split(')')[0].strip('%')
-					clean_Q30_fq2 = line.split('(')[6].split(')')[0].strip('%')
+					raw_Q30_fq1 = line.split('(')[1].split(')')[0].strip('%')
+					clean_Q30_fq1 = line.split('(')[2].split(')')[0].strip('%')
+					raw_Q30_fq2 = line.split('(')[3].split(')')[0].strip('%')
+					clean_Q30_fq2 = line.split('(')[4].split(')')[0].strip('%')
 					raw_Q30 = '%.2f'%((float(raw_Q30_fq1) + float(raw_Q30_fq2))/2)
 					clean_Q30 = '%.2f'%((float(clean_Q30_fq1) + float(clean_Q30_fq2))/2)
 					outdict['raw_Q30'] = raw_Q30 + '%'
 					outdict['clean_Q30'] = clean_Q30 + '%'
 				elif fqtype == 'SE':
-					raw_Q30 = line.split('(')[3].split(')')[0].strip('%')
-					clean_Q30 = line.split('(')[4].split(')')[0].strip('%')
+					raw_Q30 = line.split('(')[1].split(')')[0].strip('%')
+					clean_Q30 = line.split('(')[2].split(')')[0].strip('%')
 					outdict['raw_Q30'] = raw_Q30
 					outdict['clean_Q30'] = clean_Q30
 	try:
@@ -114,6 +114,9 @@ def stat_map(mapcov,outdict):
 	with open(mapcov,'r') as fm:
 		for line in fm:
 			info = line.split('\t')
+			if '[Total] Paired Reads' in line:
+				valid_reads = info[1].strip()
+				outdict['valid_reads'] = valid_reads
 			if '[Total] Fraction of Mapped Data(Mb)' in line:
 				Mapping_rate = info[1].strip()
 				outdict['Mapping_rate'] = Mapping_rate
@@ -181,12 +184,13 @@ def main():
 			stat_sample(resultdir,sample,out_dict,lambda_dict,GAPDH_dict)
 			lambda_reads = lambda_dict['Target_reads']
 			GAPDH_reads = GAPDH_dict['Target_reads']
+			valid_data = out_dict['valid_reads']
 			try:
-				lambda_rate = str('%.2f'%(100*int(lambda_reads)/int(out_dict['clean_reads'])))+'%'
+				lambda_rate = str('%.2f'%(100*int(lambda_reads)/int(valid_data)))+'%'
 			except:
 				lambda_rate = '0%'
 			try:
-				GAPDH_rate = str('%.2f'%(100*int(GAPDH_reads)/int(out_dict['clean_reads'])))+'%'
+				GAPDH_rate = str('%.2f'%(100*int(GAPDH_reads)/int(valid_data)))+'%'
 			except:
 				GAPDH_rate = '0%'
 			try:
@@ -206,8 +210,8 @@ def main():
 			#	iden = 'Negative'
 			file_QC_stat.write('Sample\tRaw_Q30\tGC_Content\tRaw_Reads\tClean_Reads\tClean_Rate\tMapping_Rate\n')
 			file_QC_stat.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\n'%(sample,out_dict['raw_Q30'],out_dict['GC_content'],out_dict['raw_reads'],out_dict['clean_reads'],out_dict['clean_rate'],out_dict['Mapping_rate']))
-			file_iden_out.write('Sample\tClean_Reads\tGAPDH_Reads\tLambda_Reads\tSARS-CoV-2_Reads\tGAPDH_Rate\tLambda_Rate\tSARS-CoV-2_Reads_Pct\tGenome_Average_Depth\t≥1X_Region_Average_Depth\t≥1X_Cov\t≥1X_size\t≥100X_Cov\t≥100X_size\tIdentification_Result\n')
-			file_iden_out.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n'%(sample,out_dict['clean_reads'],GAPDH_reads,lambda_reads,Target_reads,GAPDH_rate,lambda_rate,PCT,out_dict['Genome_Average_Depth'],out_dict['1X_Region_Average_Depth'],out_dict['Coverage_1X'],out_dict['1X_size'],out_dict['Coverage_100X'],out_dict['100X_size'],iden))
+			file_iden_out.write('Sample\tValid_Reads\tGAPDH_Reads\tLambda_Reads\tSARS-CoV-2_Reads\tGAPDH_Rate\tLambda_Rate\tSARS-CoV-2_Reads_Pct\tGenome_Average_Depth\t≥1X_Region_Average_Depth\t≥1X_Cov\t≥1X_size\t≥100X_Cov\t≥100X_size\tIdentification_Result\n')
+			file_iden_out.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n'%(sample,valid_data,GAPDH_reads,lambda_reads,Target_reads,GAPDH_rate,lambda_rate,PCT,out_dict['Genome_Average_Depth'],out_dict['1X_Region_Average_Depth'],out_dict['Coverage_1X'],out_dict['1X_size'],out_dict['Coverage_100X'],out_dict['100X_size'],iden))
 			file_QC_stat.close()
 			file_iden_out.close()
 			df_QC = pd.read_csv('%s/%s/05.Stat/QC.txt'%(resultdir,sample), sep='\t')

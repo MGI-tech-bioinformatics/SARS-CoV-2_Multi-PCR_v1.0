@@ -137,7 +137,7 @@ def generate_html_report(path, name='rem', output_path='E:/codezlims/rem/Result/
     else:
         html+= "中文"
     html+=          '''</a></div>
-                        <h2>V1.2</h2>
+                        <h2>V1.3</h2>
                         </div>
                         <!-- headLeft -->
                         <div class="headRight fr">
@@ -180,7 +180,7 @@ def generate_html_report(path, name='rem', output_path='E:/codezlims/rem/Result/
     if lang == "cn":
         html+=  '''对原始测序reads进行质控，去除含有接头的、低质量碱基数目比例超过阈值的、带有‘N’碱基数目比例超过阈值的reads，最后统计出Clean Reads及其相应的比例。'''
     else: 
-        html+=  '''We remove the low-quality reads from raw FASTQ by removing adapter contained sequences, N base ratio and low-quality base exceed the thresholds.'''    
+        html+=  '''Quality control processing include removal of sequences with low quality, sequences with n rate exceed, sequences with adapter, and then generate statistics result.'''    
     html+=      '''</p>
                     </div>
                     <div class="dataLink">
@@ -208,12 +208,12 @@ def generate_html_report(path, name='rem', output_path='E:/codezlims/rem/Result/
     else:
         html += '''
                         <p>1. Sample: Sample name;</p>
-                        <p>2. Raw_Q30: The ratio of base whose quality > 30 of the raw FASTQ;</p>
+                        <p>2. Raw_Q30: The proportion of bases with base quality exceed 30 in raw fastq;</p>
                         <p>3. GC_Content：The GC bases proportion of raw FASTQ;</p>
                         <p>4. Raw_Reads：The number of raw FASTQ;</p>
                         <p>5. Clean_Reads：The number of clean FASTQ;</p>
                         <p>6. Clean_Rate：The ratio of clean FASTQ/raw FASTQ;</p>
-                        <p>7. Mapping_Rate: The mapping ratio of clean fastq maps against three reference sequences (lambda DNA, GAPDH, coronavirus);</p>
+                        <p>7. Mapping_Rate: The proportion of the reads in the clean fastq which were mapped to three reference genomes(lambda DNA, GAPDH, coronavirus);</p>
                 '''
 
     html += ''' 
@@ -266,7 +266,7 @@ def generate_html_report(path, name='rem', output_path='E:/codezlims/rem/Result/
                     '''
     if lang == "cn":                
         html += '''<p>1. 样本：样品名；</p>
-                   <p>2. Clean_Reads：clean reads数；</p>
+                   <p>2. Valid_Reads：Valid reads数，截取的用于下游分析的有效数据量；</p>
                    <p>3. SARS-CoV-2_Reads：鉴定出的新冠病毒read数；</p>
                    <p>4. SARS-CoV-2_Reads_Pct：鉴定出的新冠病毒比例，等于100%*(SARS-CoV-2 reads number)/((lambda DNA reads number)+(SARS-CoV-2 reads number))；</p>
                    <p>5. ≥1X_Coverage：鉴定出的新冠病毒reads与reference的比对后统计≥1X的覆盖度；</p>
@@ -275,12 +275,12 @@ def generate_html_report(path, name='rem', output_path='E:/codezlims/rem/Result/
                 '''
     else:
         html += '''<p>1. Sample: Sample name;</p>
-                   <p>2. Clean_Reads: The number of clean FASTQ;</p>
-                   <p>3. SARS-CoV-2_Reads: The reads number of identified SARS-CoV-2;</p>
+                   <p>2. Valid_Reads: The number of valid reads for downstream analysis, it's related to the downsampling process;</p>
+                   <p>3. SARS-CoV-2_Reads: The reads number of SARS-CoV-2;</p>
                    <p>4. SARS-CoV-2_Reads_Pct: The proportion of SARS-CoV-2 reads: 100%*(SARS-CoV-2 reads number)/((lambda DNA reads number)+(SARS-CoV-2 reads number));</p>
-                   <p>5. ≥1X_Coverage: The coverage is calculated as proportion of reference genome covered by more than 1 folds reads;</p>
-                   <p>6. ≥100X_Coverage: The coverage is calculated as proportion of reference genome covered by more than 100 folds reads;</p>
-                   <p>7. Identification_Result: Sample identification result according to SARS-CoV-2_Reads_Pct: Positive(≥0.1%), Indetermination(0.05%-0.1%), Negative(<0.05%);</p>
+                   <p>5. ≥1X_Coverage: The proportion of MGI-SARS-CoV-2 genome point with depth exceed 1;</p>
+                   <p>6. ≥100X_Coverage: The proportion of MGI-SARS-CoV-2 genome point with depth exceed 100;</p>
+                   <p>7. Identification_Result: Identification result of MGI-SARS-CoV-2 according to SARS-CoV-2_Reads_Pct: Positive(≥0.1%), Indetermination(0.05%-0.1%), Negative(<0.05%);</p>
                 '''  
     html +=     '''
                 </div>   
@@ -325,7 +325,7 @@ def generate_html_report(path, name='rem', output_path='E:/codezlims/rem/Result/
     if lang == "cn":
         html += '''使用bcftools构建一致性序列。'''
     else:
-        html += '''BCFtools is used to create consensus sequence by applying VCF variants.'''
+        html += '''BCFtools is used to create consensus sequence.'''
     html += '''
                    </p>
                </div>
@@ -341,7 +341,7 @@ def generate_html_report(path, name='rem', output_path='E:/codezlims/rem/Result/
     if lang == "cn":
         html += '''使用freebayes进行变异检测。'''
     else:
-        html += '''freebayes is used for find small polymorphisms.'''
+        html += '''freebayes is used for variant calling.'''
     html += '''
                    </p>
                </div>

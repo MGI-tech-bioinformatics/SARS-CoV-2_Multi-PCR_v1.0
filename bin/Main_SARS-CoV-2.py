@@ -42,10 +42,16 @@ def GenerateData(script,sample_dict,fqtype):
 				raw_path = v
 				if fqtype == 'SE':
 					rawfq = 'Raw_' + sample + '.fq.gz'
+					if os.path.exists('%s/%s'%(Clean_dir,rawfq)):
+						os.system('rm %s/%s'%(Clean_dir,rawfq))
 					script.write("ln -s %(raw_path)s/*%(barcode)s.fq.gz %(Clean_dir)s/%(rawfq)s\n"%{'raw_path':raw_path,'barcode':barcode,'Clean_dir':Clean_dir,'rawfq':rawfq})
 				elif fqtype == 'PE':
 					rawfq1 = 'Raw_' + sample + '_1.fq.gz'
 					rawfq2 = 'Raw_' + sample + '_2.fq.gz'
+					if os.path.exists('%s/%s'%(Clean_dir,rawfq1)):
+						os.system('rm %s/%s'%(Clean_dir,rawfq1))
+					if os.path.exists('%s/%s'%(Clean_dir,rawfq2)):
+						os.system('rm %s/%s'%(Clean_dir,rawfq2))
 					script.write("ln -s %(raw_path)s/*%(barcode)s_1.fq.gz %(Clean_dir)s/%(rawfq1)s\nln -s %(raw_path)s/*%(barcode)s_2.fq.gz %(Clean_dir)s/%(rawfq2)s\n"%{'raw_path':raw_path,'barcode':barcode,'Clean_dir':Clean_dir,'rawfq1':rawfq1,'rawfq2':rawfq2})
 				else:
 					fqtype_error()
@@ -77,10 +83,13 @@ def GenerateData(script,sample_dict,fqtype):
 				fqtype_error()
 	return
 
-def CleanData(script,sample,fqtype,SplitData):
+def CleanData(script,sample,fqtype,SplitData,qualsys):
 	barcode_dir = result_dir + '/' + sample
 	Clean_dir = barcode_dir + '/01.Clean'
+	conf = '%s/soapnuke_conf.txt'%(Clean_dir)
 	create_dirs(Clean_dir)
+	with open(conf,'w') as fs:
+		fs.write('qualSys=%s\n'%(qualsys))
 	if fqtype == 'SE':
 		#rawfq = raw_data_path + '/*' + barcode + '.fq.gz'
 		rawfq = Clean_dir + '/Raw_' + sample + '.fq.gz'
@@ -89,15 +98,14 @@ def CleanData(script,sample,fqtype,SplitData):
 
 		if SplitData:
 			t_dict = {'G':10**9,'M':10**6,'K':10**3}
-			SplitData_n = float(SplitData.strip()[0:-1])*t_dict[SplitData.strip()[-1]]
-			splitfq = Clean_dir + '/Split_' + sample + '.fq'
-			script.write("%(seqtk)s sample -s100 %(rawfq)s %(SplitData_n)s > %(splitfq)s && gzip -f %(splitfq)s && "\
-				%{'seqtk':seqtk,'rawfq':rawfq,'splitfq':splitfq,'SplitData_n':SplitData_n})
-			script.write("%(SOAPnuke)s filter %(SOAPnuke_param)s -1 %(splitfq)s.gz -C %(cleanfq)s -o %(Clean_dir)s \n"\
-				%{'SOAPnuke':SOAPnuke,'SOAPnuke_param':SOAPnuke_param,'splitfq':splitfq,'cleanfq':cleanfq,'Clean_dir':Clean_dir})
+			SplitData_n = int(SplitData.strip()[0:-1])*t_dict[SplitData.strip()[-1]]
+			with open(conf,'a') as fs:
+				fs.write('totalReadsNum=%s\n'%(SplitData_n))
+			script.write("%(SOAPnuke)s filter %(SOAPnuke_param)s -1 %(rawfq)s -C %(cleanfq)s -o %(Clean_dir)s -c %(conf)s\n"\
+				%{'SOAPnuke':SOAPnuke,'SOAPnuke_param':SOAPnuke_param,'rawfq':rawfq,'cleanfq':cleanfq,'Clean_dir':Clean_dir,'conf':conf})
 		else:
-			script.write("%(SOAPnuke)s filter %(SOAPnuke_param)s -1 %(rawfq)s -C %(cleanfq)s -o %(Clean_dir)s \n"\
-				%{'SOAPnuke':SOAPnuke,'SOAPnuke_param':SOAPnuke_param,'rawfq':rawfq,'cleanfq':cleanfq,'Clean_dir':Clean_dir})
+			script.write("%(SOAPnuke)s filter %(SOAPnuke_param)s -1 %(rawfq)s -C %(cleanfq)s -o %(Clean_dir)s -c %(conf)s\n"\
+				%{'SOAPnuke':SOAPnuke,'SOAPnuke_param':SOAPnuke_param,'rawfq':rawfq,'cleanfq':cleanfq,'Clean_dir':Clean_dir,'conf':conf})
 	elif fqtype == 'PE':
 		#rawfq1 = raw_data_path + '/*' + barcode + '_1.fq.gz'
 		#rawfq2 = raw_data_path + '/*' + barcode + '_2.fq.gz'
@@ -110,16 +118,14 @@ def CleanData(script,sample,fqtype,SplitData):
 
 		if SplitData:
 			t_dict = {'G':10**9,'M':10**6,'K':10**3}
-			SplitData_n = float(SplitData.strip()[0:-1])*t_dict[SplitData.strip()[-1]]/2
-			splitfq1 = Clean_dir + '/Split_' + sample + '_1.fq'
-			splitfq2 = Clean_dir + '/Split_' + sample + '_2.fq'
-			script.write("%(seqtk)s sample -s100 %(rawfq1)s %(SplitData_n)s > %(splitfq1)s && gzip -f %(splitfq1)s && %(seqtk)s sample -s100 %(rawfq2)s %(SplitData_n)s > %(splitfq2)s && gzip -f %(splitfq2)s && "\
-				%{'seqtk':seqtk,'rawfq1':rawfq1,'rawfq2':rawfq2,'splitfq1':splitfq1,'splitfq2':splitfq2,'SplitData_n':SplitData_n})
-			script.write("%(SOAPnuke)s filter %(SOAPnuke_param)s -1 %(splitfq1)s.gz -2 %(splitfq2)s.gz -C %(cleanfq1)s -D %(cleanfq2)s -o %(Clean_dir)s \n"\
-				%{'SOAPnuke':SOAPnuke,'SOAPnuke_param':SOAPnuke_param,'splitfq1':splitfq1,'splitfq2':splitfq2,'cleanfq1':cleanfq1,'cleanfq2':cleanfq2,'Clean_dir':Clean_dir})
+			SplitData_n = int(SplitData.strip()[0:-1])*t_dict[SplitData.strip()[-1]]
+			with open(conf,'a') as fs:
+				fs.write('totalReadsNum=%s\n'%(SplitData_n))
+			script.write("%(SOAPnuke)s filter %(SOAPnuke_param)s -1 %(rawfq1)s -2 %(rawfq2)s -C %(cleanfq1)s -D %(cleanfq2)s -o %(Clean_dir)s -c %(conf)s\n"\
+				%{'SOAPnuke':SOAPnuke,'SOAPnuke_param':SOAPnuke_param,'rawfq1':rawfq1,'rawfq2':rawfq2,'cleanfq1':cleanfq1,'cleanfq2':cleanfq2,'Clean_dir':Clean_dir,'conf':conf})
 		else:
-			script.write("%(SOAPnuke)s filter %(SOAPnuke_param)s -1 %(rawfq1)s -2 %(rawfq2)s -C %(cleanfq1)s -D %(cleanfq2)s -o %(Clean_dir)s \n"\
-			%{'SOAPnuke':SOAPnuke,'SOAPnuke_param':SOAPnuke_param,'rawfq1':rawfq1,'rawfq2':rawfq2,'cleanfq1':cleanfq1,'cleanfq2':cleanfq2,'Clean_dir':Clean_dir})
+			script.write("%(SOAPnuke)s filter %(SOAPnuke_param)s -1 %(rawfq1)s -2 %(rawfq2)s -C %(cleanfq1)s -D %(cleanfq2)s -o %(Clean_dir)s -c %(conf)s\n"\
+			%{'SOAPnuke':SOAPnuke,'SOAPnuke_param':SOAPnuke_param,'rawfq1':rawfq1,'rawfq2':rawfq2,'cleanfq1':cleanfq1,'cleanfq2':cleanfq2,'Clean_dir':Clean_dir,'conf':conf})
 	else:
 		fqtype_error()
 	return
@@ -226,7 +232,7 @@ def AlignVariant(script,fqtype,cutprimer_list,consensus_depth):
 			script.write("zcat %(Stat_dir)s/depth.regions.bed.gz|awk  '{print NR\"\\t\"log($4+1)/log(10)}' > %(Stat_dir)s/%(sample)s.draw.depth\n"%{'Stat_dir':Stat_dir,'sample':sample})
 			script.write("%(samtools)s depth -d 100000000 -a -b %(variantbed)s %(Stat_dir)s/%(sample)s.bam > %(Stat_dir)s/%(sample)s.depth\n"%{'samtools':samtools,'variantbed':variantbed,'sample':sample,'Stat_dir':Stat_dir,'CutPrimer_dir':CutPrimer_dir})
 			script.write("export R_LIBS=%(R_lib)s:$R_LIBS && %(Rscript)s %(bin)s/line.depth.R %(Stat_dir)s/%(sample)s.draw.depth %(Stat_dir)s/Windows.Depth.svg\n"%{'Rscript':Rscript,'bin':bin,'Stat_dir':Stat_dir,'R_lib':R_lib,'sample':sample})
-			script.write("%(freebayes)s -t %(virusbed)s %(freebayes_param)s -f %(ref)s %(Stat_dir)s/%(sample)s.bam > %(Stat_dir)s/%(sample)s.raw.vcf && %(bcftools)s norm -f %(ref)s %(Stat_dir)s/%(sample)s.raw.vcf -o %(Stat_dir)s/%(sample)s.vcf\n%(bgzip)s -f %(Stat_dir)s/%(sample)s.vcf\n%(tabix)s %(Stat_dir)s/%(sample)s.vcf.gz\n%(java)s -jar %(bin)s/snpEff/snpEff.jar MN908947.3 %(Stat_dir)s/%(sample)s.vcf.gz > %(Stat_dir)s/%(sample)s.snpEff.vcf\nexport PYTHONPATH=%(python3_lib)s:$PYTHONPATH && %(python3)s %(bin)s/get_anno_table.py %(Stat_dir)s/%(sample)s.snpEff.vcf %(Stat_dir)s %(sample)s\n"%{'freebayes':freebayes,'virusbed':virusbed,'Stat_dir':Stat_dir,'sample':sample,'ref':ref,'bgzip':bgzip,'tabix':tabix,'bcftools':bcftools,'freebayes_param':freebayes_param,'java':java,'bin':bin,'python3':python3,'python3_lib':python3_lib,'CutPrimer_dir':CutPrimer_dir})
+			script.write("%(freebayes)s -t %(virusbed)s %(freebayes_param)s -f %(ref)s %(Stat_dir)s/%(sample)s.bam > %(Stat_dir)s/%(sample)s.raw.vcf && %(bcftools)s norm -f %(ref)s %(Stat_dir)s/%(sample)s.raw.vcf -o %(Stat_dir)s/%(sample)s.vcf\n%(bgzip)s -f %(Stat_dir)s/%(sample)s.vcf\n%(tabix)s %(Stat_dir)s/%(sample)s.vcf.gz\n%(java)s -jar %(bin)s/snpEff/snpEff.jar MN908947.3 %(Stat_dir)s/%(sample)s.vcf.gz > %(Stat_dir)s/%(sample)s.snpEff.vcf -stats %(Stat_dir)s/%(sample)s.snpEff.html \nexport PYTHONPATH=%(python3_lib)s:$PYTHONPATH && %(python3)s %(bin)s/get_anno_table.py %(Stat_dir)s/%(sample)s.snpEff.vcf %(Stat_dir)s %(sample)s\n"%{'freebayes':freebayes,'virusbed':virusbed,'Stat_dir':Stat_dir,'sample':sample,'ref':ref,'bgzip':bgzip,'tabix':tabix,'bcftools':bcftools,'freebayes_param':freebayes_param,'java':java,'bin':bin,'python3':python3,'python3_lib':python3_lib,'CutPrimer_dir':CutPrimer_dir})
 			script.write("%(bin)s/Consensus.pl %(Stat_dir)s/%(sample)s.depth %(ref)s %(consensus_depth)s %(Stat_dir)s/%(sample)s.reference1.fa %(Stat_dir)s/%(sample)s.vcf.gz\n"%{'bin':bin,'Stat_dir':Stat_dir,'sample':sample,'ref':ref,'consensus_depth':consensus_depth})
 			script.write("%(bcftools)s consensus -f %(Stat_dir)s/%(sample)s.reference1.fa -o %(Stat_dir)s/%(sample)s.Consensus.fa %(Stat_dir)s/%(sample)s.vcf.gz\n"%{'bcftools':bcftools,'Stat_dir':Stat_dir,'sample':sample})
 			script.write("sed -i \"s/MN908947.3 Wuhan seafood market pneumonia virus isolate Wuhan-Hu-1, complete genome/%(sample)s/g\" %(Stat_dir)s/%(sample)s.Consensus.fa\n"%{'Stat_dir':Stat_dir,'sample':sample})
@@ -259,6 +265,7 @@ def MainShell(script_file,step0shell,step1shell,step2shell,step3shell,step4shell
 		%{'watchdog':watchdog,'stepshell':step6shell})
 	script.write('''echo "start step7  at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`" && perl %(watchdog)s --mem 1G --lines 1 --maxjob 300 %(stepshell)s && echo "finish step7 at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`"\n'''\
 		%{'watchdog':watchdog,'stepshell':step7shell})
+	script.write('%(python3)s %(bin)s/Result_summary.py -l %(barcode_file)s -r %(result_dir)s -o %(sum_dir)s\n'%{'python3':python3,'bin':bin,'barcode_file':barcode_file,'result_dir':result_dir,'sum_dir':sum_dir})
 	script.close()
 	return
 
@@ -280,6 +287,7 @@ def MainShell_qsubsge(script_file,step0shell,step1shell,step2shell,step3shell,st
 		%{'qsubsge':qsubsge,'queue':queue,'subproject':subproject,'stepshell':step6shell})
 	script.write('''echo "start step7  at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`" && perl %(qsubsge)s --queue %(queue)s --resource="vf=1G -P %(subproject)s -l num_proc=1"  --jobprefix step7 --lines 1 --reqsub --interval 5 --convert no -maxjob 500 %(stepshell)s && echo "finish step7 at `date +'%%Y-%%m-%%d %%H:%%M:%%S %%z'`"\n'''\
 		%{'qsubsge':qsubsge,'queue':queue,'subproject':subproject,'stepshell':step7shell})
+	script.write('%(python3)s %(bin)s/Result_summary.py -l %(barcode_file)s -r %(result_dir)s -o %(sum_dir)s\n'%{'python3':python3,'bin':bin,'barcode_file':barcode_file,'result_dir':result_dir,'sum_dir':sum_dir})
 	script.close()
 	return
 
@@ -320,9 +328,9 @@ if __name__ == '__main__':
 		SOAPnuke_param = jsonobj["SOAPnuke_param"]
 	except:
 		if fqtype == 'PE':
-			SOAPnuke_param = '-l 10 -q 0.2 -n 0.05 -Q 2 -G -f AAGTCGGAGGCCAAGCGGTCTTAGGAAGACAA  -r AAGTCGGATCGTAGCCATGTCGTTCTGTGAGCCAAGGAGTTG'
+			SOAPnuke_param = '-l 10 -q 0.2 -n 0.05 -f AAGTCGGAGGCCAAGCGGTCTTAGGAAGACAA  -r AAGTCGGATCGTAGCCATGTCGTTCTGTGAGCCAAGGAGTTG'
 		elif fqtype == 'SE':
-			SOAPnuke_param = '-l 10 -q 0.2 -n 0.05 -Q 2 -G -f AAGTCGGAGGCCAAGCGGTCTTAGGAAGACAA'
+			SOAPnuke_param = '-l 10 -q 0.2 -n 0.05 -f AAGTCGGAGGCCAAGCGGTCTTAGGAAGACAA'
 		else:
 			print('ERROR: Invalid FqType in json file.')
 			sys.exit(1)
@@ -330,6 +338,29 @@ if __name__ == '__main__':
 		freebayes_param = jsonobj["freebayes_param"]
 	except:
 		freebayes_param = '-H -p 1 -q 20 -m 60 --min-coverage 20 -F 0.6'
+	try:
+		consensus_depth = jsonobj["consensus_depth"]
+	except:
+		consensus_depth = 10
+	try:
+		qualsys = jsonobj["qualsys"]
+	except:
+		qualsys = 2
+
+	if '--min-coverage' not in freebayes_param:
+		print("ERROR: The <--min-coverage> parameter must be set via <freebayes_param> in the input.json.")
+		sys.exit(1)
+
+	min_coverage = freebayes_param.split('--min-coverage')[1].split()[0].strip()
+	try:
+		float(min_coverage)
+	except:
+		print('ERROR: Invalid value of <--min-coverage> in <freebayes_param>')
+		sys.exit(1)
+	if float(min_coverage) < float(consensus_depth):
+		print('ERROR: The value of <--min-coverage> in <freebayes_param> must exceed the <consensus_depth>.')
+		sys.exit(1)
+
 	flash_param = '-m 7'
 	java = jsonobj["java"]
 	python3 = jsonobj["python3"]
@@ -349,7 +380,7 @@ if __name__ == '__main__':
 	SOAPnuke = jsonobj["SOAPnuke"]
 	flash = jsonobj["flash"]
 
-	read_len = fqtype_p[2:]
+	#read_len = fqtype_p[2:]
 	barcode_file = jsonobj["sample_list"]
 	virusbed = database + '/nCoV.virus.bed'
 	virusbed_cutprimer = database + '/nCoV.virus.cutprimer.bed'
@@ -358,10 +389,6 @@ if __name__ == '__main__':
 	variantbed = database + '/nCoV.variant.bed'
 	bed2 = database + '/wuhanRef.bed'
 	ref = database + '/nCov.fasta'
-	try:
-		consensus_depth = jsonobj["consensus_depth"]
-	except:
-		consensus_depth = 10
 	watchdog = bin+'/localsubmit/bin/watchDog_v1.0.pl'
 	qsubsge = rootpath+'/bin/qsub-sge.pl'
 	try:
@@ -383,7 +410,8 @@ if __name__ == '__main__':
 		SplitData = ''
 	result_dir = os.path.abspath(work_dir)+"/result"
 	shell_dir = os.path.abspath(work_dir)+"/shell"
-	create_dirs(work_dir,result_dir,shell_dir)
+	sum_dir = os.path.abspath(work_dir)+"/summary"
+	create_dirs(work_dir,result_dir,shell_dir,sum_dir)
 
 	step0shell = open(shell_dir+ '/step0.GenerateData.sh','w')
 	step1shell = open(shell_dir+ '/step1.filter.sh','w')
@@ -411,7 +439,7 @@ if __name__ == '__main__':
 
 	for key, value in sample_dict.items():
 		sample = key
-		CleanData(step1shell,sample,fqtype,SplitData)
+		CleanData(step1shell,sample,fqtype,SplitData,qualsys)
 		#bwaaln(step2shell,sample,fqtype,read_len)
 		bwamem(step2shell,sample,fqtype)
 		CovDep(step3shell,sample)

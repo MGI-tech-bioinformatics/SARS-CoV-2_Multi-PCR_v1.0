@@ -1,4 +1,4 @@
-# SARS-CoV-2_Multi-PCR_v1.0
+# MGI-SARS-CoV-2
 SARS-CoV-2 analysis pipeline for multiplex-PCR MPS(Massive Parrallel Sequencing) data.
 
 ## Introduction
@@ -52,6 +52,12 @@ May 7, 2021
 Dec 8, 2021
 1. Fixed a bug in indel calling, we will merge overlaped PE reads to make the indel detection more accurate.
 
+Jan 24, 2022
+1. Use SOAPnuke version 2.1.7 instead of 1.5.6.
+2. The summary of QC/Identification/Mutation/ConsensusFasta will be output in the directory $workdir/result/summary.
+3. Optimized memory usage of this software.
+4. Update the docker version to v1.3.
+
 ## Requirements:
 Before running this pipeline, you need to make sure that several pieces of software and/or modules are installed on the system:  
 
@@ -65,7 +71,7 @@ Library for Python3 and R:
 
 Softwares for data quality control:  
 * seqtk v1.2 (https://github.com/lh3/seqtk)
-* SOAPnuke v1.5.6 (https://github.com/BGI-flexlab/SOAPnuke)  
+* SOAPnuke v2.1.7 (https://github.com/BGI-flexlab/SOAPnuke)  
 
 Software for alignment and bam file statistics:
 * BWA v0.7.16 (https://github.com/lh3/bwa)
@@ -146,7 +152,7 @@ path/to/workdir/result/*/05.Stat/*.html
 
 To pull a docker repository:  
 
-    docker pull meizhiying/mgi-sars-cov-2:Eu
+    docker pull meizhiying/mgi-sars-cov-2:v1.3
 
 Running  
 
@@ -154,8 +160,8 @@ Running
 	--name $WORKNAME \
 	-v $workdir:$workdir \
 	-v $datadir:$datadir \
-	meizhiying/mgi-sars-cov-2:Eu \
-	/SARS-CoV-2_pipeline/bin/python3/bin/python3 /SARS-CoV-2_pipeline/bin/Main_SARS-CoV-2.mgi_use.py -i $json
+	meizhiying/mgi-sars-cov-2:v1.3 \
+	/SARS-CoV-2_pipeline/bin/python3/bin/python3 /SARS-CoV-2_pipeline/bin/Main_SARS-CoV-2.py -i $json
 
 Notes
 1. All requirements and software are install in docker image, there is no need to configure the software path in json file.  
@@ -164,8 +170,8 @@ Notes
 ```json
     {
       "FqType": "PE", 
-      "sample_list": "/data/MGI-SARS-CoV-2_V1.2/sample.list", 
-      "workdir": "/data/MGI-SARS-CoV-2_V1.2/analysis", 
+      "sample_list": "/data/test/sample.list", 
+      "workdir": "/data/test/analysis", 
       "SplitData": "1M", 
       "freebayes_param": "-H -p 1 -q 20 -m 60 --min-coverage 20 -F 0.6", 
       "consensus_depth": "10", 
